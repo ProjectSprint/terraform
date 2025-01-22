@@ -63,6 +63,7 @@ jobs:
   terraform-apply:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     needs: terraform-plan
     steps:
       - uses: actions/checkout@v3
