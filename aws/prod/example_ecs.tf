@@ -20,8 +20,8 @@ resource "aws_ecs_service" "example" {
   name            = "example-service"
   cluster         = aws_ecs_cluster.projectsprint.arn
   task_definition = aws_ecs_task_definition.example.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  desired_count   = 0
+  # launch_type     = "FARGATE"
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
@@ -62,47 +62,46 @@ resource "aws_ecs_task_definition" "example" {
   execution_role_arn       = aws_iam_role.projectsprint_ecs_task_execution.arn
   task_role_arn            = aws_iam_role.projectsprint_ecs_task.arn
 
-  # Uncomment and update with your actual ECR image
   container_definitions = jsonencode([{
-    # name = "example-container"
-    # image     = "${module.ecr_example.repository_url}:latest"
-    # cpu       = 256
-    # memory    = 512
-    # essential = true
+    name      = "example-container"
+    image     = "${module.ecr_example.repository_url}:latest"
+    cpu       = 256
+    memory    = 512
+    essential = true
 
-    # portMappings = [{
-    #   containerPort = 8080
-    #   hostPort      = 8080
-    #   protocol      = "tcp"
-    # }]
+    portMappings = [{
+      containerPort = 8080
+      hostPort      = 8080
+      protocol      = "tcp"
+    }]
 
-    # environment = [
-    #   { name = "DB_NAME", value = "postgres" },
-    #   { name = "DB_PORT", value = "5432" },
-    #   { name = "DB_USERNAME", value = "postgres" },
-    #   { name = "JWT_SECRET", value = random_string.example_jwt_secret.result },
-    #   { name = "AWS_ACCESS_KEY_ID", value = module.projectsprint_iam_account["example"].iam_access_key_id },
-    #   { name = "AWS_SECRET_ACCESS_KEY", value = module.projectsprint_iam_account["example"].iam_access_key_secret },
-    #   { name = "AWS_S3_BUCKET_NAME", value = "projectsprint-bucket-public-read" },
-    #   { name = "AWS_REGION", value = var.region }
-    # ]
+    environment = [
+      { name = "DB_NAME", value = "postgres" },
+      { name = "DB_PORT", value = "5432" },
+      { name = "DB_USERNAME", value = "postgres" },
+      { name = "JWT_SECRET", value = random_string.example_jwt_secret.result },
+      { name = "AWS_ACCESS_KEY_ID", value = module.projectsprint_iam_account["example"].iam_access_key_id },
+      { name = "AWS_SECRET_ACCESS_KEY", value = module.projectsprint_iam_account["example"].iam_access_key_secret },
+      { name = "AWS_S3_BUCKET_NAME", value = "projectsprint-bucket-public-read" },
+      { name = "AWS_REGION", value = var.region }
+    ]
 
-    # logConfiguration = {
-    #   logDriver = "awslogs"
-    #   options = {
-    #     "awslogs-group"         = aws_cloudwatch_log_group.example.name
-    #     "awslogs-region"        = var.region
-    #     "awslogs-stream-prefix" = "ecs"
-    #   }
-    # }
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = aws_cloudwatch_log_group.example.name
+        "awslogs-region"        = var.region
+        "awslogs-stream-prefix" = "ecs"
+      }
+    }
 
-    # healthCheck = {
-    #   command     = ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
-    #   interval    = 30
-    #   timeout     = 5
-    #   retries     = 3
-    #   startPeriod = 0
-    # }
+    healthCheck = {
+      command     = ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval    = 30
+      timeout     = 5
+      retries     = 3
+      startPeriod = 0
+    }
   }])
 }
 

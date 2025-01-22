@@ -1,10 +1,11 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group
 resource "aws_lb_target_group" "example" {
-  name        = "example-tg"
+  # use random string as suffix because if modified and gets recreatd, target group with the same name is not allowed
+  name        = "example-tg-${random_string.target_group_suffix.result}"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.projectsprint.id
-  target_type = "instance"
+  target_type = "ip"
   health_check {
     enabled             = true
     healthy_threshold   = 3
@@ -16,7 +17,21 @@ resource "aws_lb_target_group" "example" {
     timeout             = 5
     unhealthy_threshold = 2
   }
+
+  lifecycle {
+    # this is here because target group can't be destroyed when it's in use
+    create_before_destroy = true
+  }
 }
+
+# https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
+resource "random_string" "target_group_suffix" {
+  length  = 4
+  special = false
+  upper   = false
+}
+
+
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 resource "aws_lb" "example" {
   name               = "example-lb"
@@ -43,5 +58,12 @@ resource "aws_lb_listener" "example" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.example.arn
   }
+
+  lifecycle {
+    # this is here because listener can't be destroyed when it's in use
+    create_before_destroy = true
+  }
+  # want custom pathing? Checkout:
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener_rule
 }
 
