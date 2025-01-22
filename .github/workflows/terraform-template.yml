@@ -18,6 +18,8 @@ on:
         required: true
       AWS_REGION:
         required: true
+      TF_VAR_PROJECTSPRINT_VM_PUBLIC_KEY:
+        required: true
 
 jobs:
   terraform-fmt:
@@ -61,7 +63,6 @@ jobs:
   terraform-apply:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
     needs: terraform-plan
     steps:
       - uses: actions/checkout@v3
