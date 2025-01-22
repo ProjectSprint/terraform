@@ -4,7 +4,7 @@ locals {
   s3_backend_name = "projectsprint-tf-state"
 }
 
-variable "projectsprint_vm_public_key" {
+variable "PROJECTSPRINT_VM_PUBLIC_KEY" {
   type    = string
   default = ""
 }
