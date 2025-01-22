@@ -18,6 +18,8 @@ on:
         required: true
       AWS_REGION:
         required: true
+      TF_VAR_PROJECTSPRINT_VM_PUBLIC_KEY:
+        required: true
 
 jobs:
   terraform-fmt:
