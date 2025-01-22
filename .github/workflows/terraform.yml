@@ -12,8 +12,4 @@ jobs:
     with:
       environment: production
       working_directory: aws/prod
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      TF_VAR_PROJECTSPRINT_VM_PUBLIC_KEY: ${{ secrets.TF_VAR_PROJECTSPRINT_VM_PUBLIC_KEY }}
+    secrets: inherit # This will pass all repository secrets to the reusable workflow
