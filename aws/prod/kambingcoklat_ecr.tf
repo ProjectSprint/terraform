@@ -1,4 +1,4 @@
-module "projectsprint_ecr_policy" { # Fixed typo in module name (was projectspint)
+module "ecr_policy_kambingcoklat" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "5.37.1"
 
@@ -40,17 +40,17 @@ module "projectsprint_ecr_policy" { # Fixed typo in module name (was projectspin
 }
 
 resource "aws_iam_user_policy_attachment" "projectsprint_ecr" {
-  user       = module.projectsprint_iam_account["nanda"].iam_user_name
-  policy_arn = module.projectsprint_ecr_policy.arn
+  user       = module.projectsprint_iam_account["kambingcoklat"].iam_user_name
+  policy_arn = module.ecr_policy_kambingcoklat.arn
 }
 
-module "projectsprint_ecr" {
+module "ecr_kambingcoklat" {
   source = "terraform-aws-modules/ecr/aws"
 
   repository_name                   = "kambingcoklat-repository"
   repository_image_tag_mutability   = "MUTABLE"
   repository_force_delete           = true
-  repository_read_write_access_arns = [module.projectsprint_iam_account["nanda"].iam_user_arn]
+  repository_read_write_access_arns = [module.projectsprint_iam_account["kambingcoklat"].iam_user_arn]
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
