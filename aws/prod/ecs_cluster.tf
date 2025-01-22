@@ -17,5 +17,5 @@ resource "aws_ecs_cluster_capacity_providers" "projectsprint_development" {
 resource "aws_service_discovery_private_dns_namespace" "projectsprint" {
   name        = "projectsprint.local"
   description = "Private DNS namespace for projectsprint"
-  vpc         = module.default-vpc.default_vpc_id
+  vpc         = aws_vpc.projectsprint.id
 }

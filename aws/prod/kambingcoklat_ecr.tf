@@ -22,7 +22,7 @@ module "ecr_policy_kambingcoklat" {
           "ecr:*"
         ]
         Resource = [
-          module.projectsprint_ecr.repository_arn # Removed each.key as it's not in a for_each context
+          module.ecr_kambingcoklat.repository_arn
         ]
       },
       {
