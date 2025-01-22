@@ -16,10 +16,7 @@ variable "projectsprint_teams" {
   }))
 
   default = {
-    "kambingcoklat" = {
-      allow_view_ec2 = true
-    }
-    "nanda" = {
+    "example" = {
       allow_view_ec2 = true
     }
   }
