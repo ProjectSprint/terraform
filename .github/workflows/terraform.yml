@@ -8,7 +8,7 @@ on:
 
 jobs:
   terraform-prod:
-    uses: ./.github/workflows/terraform-template.yml@main
+    uses: ./.github/workflows/terraform-template.yml
     with:
       environment: production
       working_directory: aws/prod
