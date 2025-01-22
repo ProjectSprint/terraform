@@ -37,7 +37,7 @@ module "projectspint_ecr_policy" {
      },
    ]
  })
-
+}
 
 resource "aws_iam_user_policy_attachment" "projectsprint_ecr" {
  user       = module.projectsprint_iam_account["nanda"].iam_user_name
