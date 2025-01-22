@@ -20,8 +20,8 @@ resource "aws_ecs_service" "example" {
   name            = "example-service"
   cluster         = aws_ecs_cluster.projectsprint.arn
   task_definition = aws_ecs_task_definition.example.arn
-  desired_count   = 0
-  # launch_type     = "FARGATE"
+  # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
+  desired_count = 1
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
@@ -30,11 +30,11 @@ resource "aws_ecs_service" "example" {
   }
 
   network_configuration {
-    subnets = [aws_subnet.private_a.id]
+    subnets = [aws_subnet.public_a.id]
     security_groups = [
       module.projectsprint_all_sg.security_group_id,
     ]
-    assign_public_ip = false
+    assign_public_ip = true
   }
 
   service_registries {
@@ -76,6 +76,7 @@ resource "aws_ecs_task_definition" "example" {
     }]
 
     environment = [
+      { name = "PORT", value = "8080" },
       { name = "DB_NAME", value = "postgres" },
       { name = "DB_PORT", value = "5432" },
       { name = "DB_USERNAME", value = "postgres" },
