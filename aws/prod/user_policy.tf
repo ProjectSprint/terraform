@@ -15,6 +15,11 @@ module "iam_policy_projectspint_ec2_view" {
       {
         Effect = "Allow"
         Action = [
+          "iam:List*",
+          "iam:Get*",
+          "dynamodb:List*",
+          "dynamodb:Get*",
+          "dynamodb:Describe*",
           "ec2:Describe*",
           "ec2:Get*",
           "ec2:List*",
@@ -39,6 +44,7 @@ module "iam_policy_projectspint_ec2_view" {
           "application-autoscaling:List*",
           "servicecatalog:List*",
           "servicediscovery:List*",
+          "servicediscovery:Get*",
           "tag:Get*",
           "cloudwatch:Describe*",
           "cloudwatch:Get*",

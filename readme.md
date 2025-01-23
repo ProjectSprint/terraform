@@ -12,7 +12,7 @@
 ## How to start
 1. `cd` to `aws/prod`
 2. run `terraform init` (only needed at the first time, or when you add a new [Terraform Module](https://developer.hashicorp.com/terraform/language/modules))
-3. run `terraform plan` to know the changes that will happen to the Infrastrucure
+3. run `terraform plan -lock=false` to know the changes that will happen to the Infrastrucure
 4. (if you are the administrator) run `terraform apply` to execute
 ## How to contribute
 - Fork this project
