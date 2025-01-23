@@ -18,3 +18,4 @@
 - Fork this project
 - `git clone` the forked project
 - Do modification that are needed (your ProjectSprint account should be able to run `terraform plan`)
+- If finished, create a pull request to this repo
