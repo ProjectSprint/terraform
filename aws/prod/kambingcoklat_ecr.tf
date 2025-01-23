@@ -1,11 +1,11 @@
 # https://registry.terraform.io/modules/terraform-aws-modules/ecr/aws/latest
-module "example_ecr" {
+module "kambingcoklat_ecr" {
   source = "terraform-aws-modules/ecr/aws"
 
-  repository_name                   = "example-repository"
+  repository_name                   = "kambingcoklat-repository"
   repository_image_tag_mutability   = "MUTABLE"
   repository_force_delete           = true
-  repository_read_write_access_arns = [module.projectsprint_iam_account["example"].iam_user_arn]
+  repository_read_write_access_arns = [module.projectsprint_iam_account["kambingcoklat"].iam_user_arn]
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
