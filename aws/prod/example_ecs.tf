@@ -1,5 +1,5 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/service_discovery_service
-resource "aws_service_discovery_service" "example" {
+resource "aws_service_discovery_service" "example_discovery" {
   name = "example-service"
   dns_config {
     namespace_id = aws_service_discovery_private_dns_namespace.projectsprint.id
@@ -16,10 +16,10 @@ resource "aws_service_discovery_service" "example" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service
-resource "aws_ecs_service" "example" {
+resource "aws_ecs_service" "example_service" {
   name            = "example-service"
   cluster         = aws_ecs_cluster.projectsprint.arn
-  task_definition = aws_ecs_task_definition.example.arn
+  task_definition = aws_ecs_task_definition.example_task.arn
   # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
   desired_count = 1
 
@@ -38,11 +38,11 @@ resource "aws_ecs_service" "example" {
   }
 
   service_registries {
-    registry_arn = aws_service_discovery_service.example.arn
+    registry_arn = aws_service_discovery_service.example_discovery.arn
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.example.arn
+    target_group_arn = aws_lb_target_group.example_target_group.arn
     container_name   = "example-container"
     container_port   = 8080
   }
@@ -53,7 +53,7 @@ resource "aws_ecs_service" "example" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition
-resource "aws_ecs_task_definition" "example" {
+resource "aws_ecs_task_definition" "example_task" {
   family                   = "example-task-definition"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "example" {
 
   container_definitions = jsonencode([{
     name      = "example-container"
-    image     = "${module.ecr_example.repository_url}:latest"
+    image     = "${module.example_ecr.repository_url}:latest"
     cpu       = 256
     memory    = 512
     essential = true
@@ -90,14 +90,14 @@ resource "aws_ecs_task_definition" "example" {
     logConfiguration = {
       logDriver = "awslogs"
       options = {
-        "awslogs-group"         = aws_cloudwatch_log_group.example.name
+        "awslogs-group"         = aws_cloudwatch_log_group.example_log.name
         "awslogs-region"        = var.region
         "awslogs-stream-prefix" = "ecs"
       }
     }
 
     healthCheck = {
-      command     = ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      command     = ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"]
       interval    = 30
       timeout     = 5
       retries     = 3
@@ -107,7 +107,7 @@ resource "aws_ecs_task_definition" "example" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group
-resource "aws_cloudwatch_log_group" "example" {
+resource "aws_cloudwatch_log_group" "example_log" {
   name              = "/ecs/service/projectsprint-example"
   retention_in_days = 7
 }

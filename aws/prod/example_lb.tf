@@ -1,7 +1,7 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group
-resource "aws_lb_target_group" "example" {
+resource "aws_lb_target_group" "example_target_group" {
   # use random string as suffix because if modified and gets recreatd, target group with the same name is not allowed
-  name        = "example-tg-${random_string.target_group_suffix.result}"
+  name        = "example-tg-${random_string.example_target_group_suffix.result}"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.projectsprint.id
@@ -25,7 +25,7 @@ resource "aws_lb_target_group" "example" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
-resource "random_string" "target_group_suffix" {
+resource "random_string" "example_target_group_suffix" {
   length  = 4
   special = false
   upper   = false
@@ -33,7 +33,7 @@ resource "random_string" "target_group_suffix" {
 
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
-resource "aws_lb" "example" {
+resource "aws_lb" "example_lb" {
   name               = "example-lb"
   internal           = true
   load_balancer_type = "application"
@@ -49,14 +49,14 @@ resource "aws_lb" "example" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener_rule
-resource "aws_lb_listener" "example" {
-  load_balancer_arn = aws_lb.example.arn
+resource "aws_lb_listener" "example_lb_listener" {
+  load_balancer_arn = aws_lb.example_lb.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.example.arn
+    target_group_arn = aws_lb_target_group.example_target_group.arn
   }
 
   lifecycle {
