@@ -1,0 +1,21 @@
+name: Terraform Format Check
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      working_directory:
+        required: true
+        type: string
+
+jobs:
+  terraform-fmt:
+    if: github.event_name == 'pull_request'
+    name: ${{ inputs.environment }}-terraform-fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive ${{ inputs.working_directory }}
