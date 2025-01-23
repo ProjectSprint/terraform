@@ -19,6 +19,9 @@ variable "projectsprint_teams" {
     "example" = {
       allow_view_ec2 = true
     }
+    "nanda" = {
+      allow_view_ec2 = true
+    }
     "kambingcoklat" = {
       allow_view_ec2 = true
     }
