@@ -19,6 +19,9 @@ variable "projectsprint_teams" {
     "example" = {
       allow_view_ec2 = true
     }
+    "kambingcoklat" = {
+      allow_view_ec2 = true
+    }
   }
 }
 // https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-user#outputs
