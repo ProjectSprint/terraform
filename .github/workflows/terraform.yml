@@ -8,6 +8,7 @@ on:
 
 jobs:
   prod-fmt:
+    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/terraform-fmt.yml
     with:
       environment: prod
@@ -25,6 +26,7 @@ jobs:
       TF_VAR_PROJECTSPRINT_VM_PUBLIC_KEY: ${{ secrets.TF_VAR_PROJECTSPRINT_VM_PUBLIC_KEY }}
 
   prod-apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [ prod-fmt, prod-plan ]
     uses: ./.github/workflows/terraform-apply.yml
     with:

@@ -11,7 +11,6 @@ on:
 
 jobs:
   terraform-fmt:
-    if: github.event_name == 'pull_request'
     name: ${{ inputs.environment }}-terraform-fmt
     runs-on: ubuntu-latest
     steps:
