@@ -3,6 +3,7 @@ module "nanda_ecr" {
   source = "terraform-aws-modules/ecr/aws"
 
   repository_name                   = "nanda-repository"
+  repository_type                   = "public"
   repository_image_tag_mutability   = "MUTABLE"
   repository_force_delete           = true
   repository_read_write_access_arns = [module.projectsprint_iam_account["nanda"].iam_user_arn]
