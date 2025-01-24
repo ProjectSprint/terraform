@@ -22,6 +22,11 @@ resource "aws_lb_target_group" "example_target_group" {
     # this is here because target group can't be destroyed when it's in use
     create_before_destroy = true
   }
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
@@ -43,8 +48,9 @@ resource "aws_lb" "example_lb" {
   enable_deletion_protection = false
 
   tags = {
-    Name    = "example-lb"
-    project = "projectsprint"
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
   }
 }
 
@@ -65,5 +71,10 @@ resource "aws_lb_listener" "example_lb_listener" {
   }
   # want custom pathing? Checkout:
   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener_rule
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 

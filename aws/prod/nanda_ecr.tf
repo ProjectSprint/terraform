@@ -25,7 +25,8 @@ module "nanda_ecr" {
   })
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "nanda"
   }
 }

@@ -25,7 +25,7 @@ module "example_ecr" {
   })
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    project = "projectsprint",
+    Name    = "example-db"
   }
 }
