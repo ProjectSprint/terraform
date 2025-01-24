@@ -104,12 +104,22 @@ resource "aws_ecs_task_definition" "example_task" {
       startPeriod = 0
     }
   }])
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group
 resource "aws_cloudwatch_log_group" "example_log" {
   name              = "/ecs/service/projectsprint-example"
   retention_in_days = 7
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string

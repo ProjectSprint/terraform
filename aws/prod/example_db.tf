@@ -18,14 +18,19 @@ resource "aws_db_instance" "example_db" {
 
 
   tags = {
-    project = "projectsprint",
-    Name    = "example-db"
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
   }
 }
 
 resource "aws_db_subnet_group" "example_db_subnet" {
   name       = "example-db-subnet"
   subnet_ids = [aws_subnet.private_b.id, aws_subnet.private_a.id]
+  tags = {
+    project = "projectsprint",
+    Name    = "example-db"
+  }
 }
 
 resource "random_string" "example_db_pass" {
