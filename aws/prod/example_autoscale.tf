@@ -5,6 +5,11 @@ resource "aws_appautoscaling_target" "example_target" {
   resource_id        = "service/${aws_ecs_cluster.projectsprint.name}/${aws_ecs_service.example_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # CPU Utilization Scaling

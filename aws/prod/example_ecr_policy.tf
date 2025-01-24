@@ -20,6 +20,11 @@ module "example_ecr_policy" {
       },
     ]
   })
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
