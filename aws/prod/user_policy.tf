@@ -1,7 +1,7 @@
 module "iam_policy_projectspint_ec2_view" {
   for_each = {
     for team, config in var.projectsprint_teams : team => config
-    if config.allow_view_ec2
+    if config.allow_view
   }
 
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
@@ -141,7 +141,7 @@ module "projectsprint_s3_policy" {
 resource "aws_iam_user_policy_attachment" "projectsprint_ec2_view" {
   for_each = {
     for team, config in var.projectsprint_teams : team => config
-    if config.allow_view_ec2
+    if config.allow_view
   }
 
   user       = module.projectsprint_iam_account[each.key].iam_user_name

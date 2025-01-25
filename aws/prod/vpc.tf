@@ -32,6 +32,18 @@ resource "aws_subnet" "public_a" {
   }
 }
 
+resource "aws_subnet" "public_b" {
+  vpc_id                  = aws_vpc.projectsprint.id
+  cidr_block              = "10.0.24.0/21"
+  availability_zone       = "ap-southeast-1b"
+  map_public_ip_on_launch = true
+
+  tags = {
+    project = "projectsprint"
+    Name    = "projectsprint-subnet-public-b"
+  }
+}
+
 resource "aws_subnet" "private_a" {
   vpc_id            = aws_vpc.projectsprint.id
   cidr_block        = "10.0.0.0/21"

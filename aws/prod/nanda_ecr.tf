@@ -24,7 +24,9 @@ module "nanda_ecr" {
       }
     ]
   })
-
+  providers = {
+    aws = aws.us-east-1 # Add this line
+  }
   tags = {
     project     = "projectsprint"
     environment = "development" # or production

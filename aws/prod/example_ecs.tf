@@ -13,6 +13,12 @@ resource "aws_service_discovery_service" "example_discovery" {
     failure_threshold = 1
   }
   force_destroy = true
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_service
@@ -50,6 +56,12 @@ resource "aws_ecs_service" "example_service" {
   depends_on = [
     aws_ecs_cluster.projectsprint
   ]
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "example"
+  }
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition
