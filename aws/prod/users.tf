@@ -36,9 +36,8 @@ variable "projectsprint_teams" {
         hasEcrImages             = false
         useDbFromIndex           = 0 # example usage
       }]
-      db_disk = "standard",
-      db_type = "postgres",
-
+      db_disk      = "standard",
+      db_type      = "postgres",
       db_instances = ["t4g.micro"]
     }
     "example" = {
