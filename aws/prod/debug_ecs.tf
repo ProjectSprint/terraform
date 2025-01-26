@@ -81,9 +81,11 @@ resource "aws_ecs_task_definition" "debug_task_definitions" {
 
     environment = [
       { name = "PORT", value = var.debug_service_configs[each.value].container_port },
-      { name = "DB_NAME", value = "postgres" },
+      { name = "DB_HOST", value = var.debug_databases["debug-${each.key}-db"].address },
+      { name = "DB_NAME", value = var.debug_databases["debug-${each.key}-db"].db_name },
       { name = "DB_PORT", value = "5432" },
       { name = "DB_USERNAME", value = "postgres" },
+      { name = "DB_PASSWORD", value = random_string.debug_db_pass["debug-${each.key}-db"].result },
       { name = "JWT_SECRET", value = random_string.debug_jwt_secret.result },
       { name = "AWS_ACCESS_KEY_ID", value = module.projectsprint_iam_account["debug"].iam_access_key_id },
       { name = "AWS_SECRET_ACCESS_KEY", value = module.projectsprint_iam_account["debug"].iam_access_key_secret },

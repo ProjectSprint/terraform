@@ -4,9 +4,10 @@ resource "aws_db_instance" "debug_db" {
   allocated_storage    = 5
   engine               = "postgres"
   engine_version       = "17.2"
-  instance_class       = "db.t4g.micro"
+  instance_class       = var.debug_database_configs[each.key].instance_type
   identifier           = each.key
   storage_type         = "standard"
+  db_name              = var.debug_database_configs[each.key].db_name
   username             = "postgres"
   password             = random_string.debug_db_pass[each.key].result
   parameter_group_name = "default.postgres17"
