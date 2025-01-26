@@ -1,3 +1,4 @@
+
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/service_discovery_service
 resource "aws_service_discovery_service" "example_discovery" {
   name = "example-service"

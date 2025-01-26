@@ -13,10 +13,11 @@ variable "projectsprint_teams" {
       autoscaleInstancesTo     = number,
       cpuUtilizationTrigger    = number,
       memoryUtilizationTrigger = number,
-      hasEcrImages             = bool
+      hasEcrImages             = bool,
+      useDbFromIndex           = number, # this is the new variable
     })), [])
-    db_type          = optional(string, "") # standard, gp2
-    db_disk          = optional(string, "")
+    db_type          = optional(string, "")
+    db_disk          = optional(string, "")       # standard, gp2
     db_instances     = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
     allow_view       = optional(bool, false)
     allow_create_ec2 = optional(bool, false)
@@ -29,11 +30,15 @@ variable "projectsprint_teams" {
       ecs_instances = [{
         vCpu                     = 256
         memory                   = 512
-        autoscaleInstancesTo     = 3
+        autoscaleInstancesTo     = 1
         cpuUtilizationTrigger    = 80
         memoryUtilizationTrigger = 80
         hasEcrImages             = false
+        useDbFromIndex           = 0 # example usage
       }]
+      db_disk      = "standard",
+      db_type      = "postgres",
+      db_instances = ["t4g.micro"]
     }
     "example" = {
       allow_view = true
