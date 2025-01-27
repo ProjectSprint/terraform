@@ -3,7 +3,6 @@ module "debug_ecr_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "5.37.1"
 
-  # we use suffix because policy can't be recreated when it's in use
   name = "debug-ecr-${random_string.debug_ecr_policy_suffix.result}"
   path = "/"
   policy = jsonencode({
@@ -15,18 +14,18 @@ module "debug_ecr_policy" {
           "ecr:*"
         ]
         Resource = [
-          module.debug_ecr.repository_arn
+          for service in var.debug_services :
+          module.debug_ecr[service].repository_arn
         ]
       },
     ]
   })
   tags = {
     project     = "projectsprint"
-    environment = "development" # or production
+    environment = "development"
     team_name   = "debug"
   }
 }
-
 # https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
 resource "random_string" "debug_ecr_policy_suffix" {
   length  = 4

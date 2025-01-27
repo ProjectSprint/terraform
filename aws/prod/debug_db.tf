@@ -1,5 +1,5 @@
 resource "aws_db_instance" "debug_db" {
-  for_each             = var.debug_databases
+  for_each = toset(var.debug_databases)
 
   allocated_storage    = 5
   engine               = "postgres"
@@ -37,7 +37,7 @@ resource "aws_db_subnet_group" "debug_db_subnet" {
 }
 
 resource "random_string" "debug_db_pass" {
-  for_each = var.debug_databases
+  for_each = toset(var.debug_databases)
 
   length  = 32
   special = false

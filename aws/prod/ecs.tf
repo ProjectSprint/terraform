@@ -122,7 +122,7 @@ resource "aws_ecs_task_definition" "team_tasks" {
     }
   ]...)
 
-  family                   = "${each.value.team}-task-definition"
+  family                   = "${each.key}-task-definition"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = each.value.instance.vCpu
@@ -149,22 +149,22 @@ resource "aws_ecs_task_definition" "team_tasks" {
       { name = "AWS_SECRET_ACCESS_KEY", value = module.projectsprint_iam_account[each.value.team].iam_access_key_secret },
       { name = "AWS_S3_BUCKET_NAME", value = "projectsprint-bucket-public-read" },
       { name = "AWS_REGION", value = var.region },
-      #      {
-      #        name  = "DB_USERNAME",
-      #        value = var.projectsprint_teams[each.value.team].db_type == "postgres" ? "postgres" : "admin"
-      #      },
-      #      {
-      #        name  = "DB_PASSWORD",
-      #        value = random_string.db_pass["${each.value.team}-${each.value.instance.useDbFromIndex}"].result
-      #      },
-      #      {
-      #        name  = "DB_HOST",
-      #        value = split(":", aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].endpoint)[0]
-      #      },
-      #      {
-      #        name  = "DB_PORT",
-      #        value = tostring(aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].port)
-      #      }
+      {
+        name  = "DB_USER",
+        value = var.projectsprint_teams[each.value.team].db_type == "postgres" ? "postgres" : "admin"
+      },
+      {
+        name  = "DB_PASS",
+        value = random_string.db_pass["${each.value.team}-${each.value.instance.useDbFromIndex}"].result
+      },
+      {
+        name  = "DB_HOST",
+        value = aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].address
+      },
+      {
+        name  = "DB_PORT",
+        value = tostring(aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].port)
+      }
     ]
   }])
 

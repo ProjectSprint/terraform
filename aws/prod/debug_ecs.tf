@@ -23,7 +23,7 @@ resource "aws_ecs_service" "debug_services" {
   cluster         = aws_ecs_cluster.projectsprint.arn
   task_definition = aws_ecs_task_definition.debug_task_definitions[each.key].arn
   # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
-  desired_count   = var.debug_service_configs[each.key].instance_count
+  desired_count = var.debug_service_configs[each.key].instance_count
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
@@ -56,7 +56,7 @@ resource "aws_ecs_service" "debug_services" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecs_task_definition
 resource "aws_ecs_task_definition" "debug_task_definitions" {
-  for_each = var.debug_services
+  for_each = toset(var.debug_services)
 
   family                   = each.value
   requires_compatibilities = ["FARGATE"]
@@ -66,9 +66,10 @@ resource "aws_ecs_task_definition" "debug_task_definitions" {
   execution_role_arn       = aws_iam_role.projectsprint_ecs_task_execution.arn
   task_role_arn            = aws_iam_role.projectsprint_ecs_task.arn
 
+
   container_definitions = jsonencode([{
     name      = each.value
-    image     = "${module.debug_ecr[each.key].repository_url}:latest"
+    image     = "${module.debug_ecr[each.value].repository_url}:latest"
     cpu       = var.debug_service_configs[each.value].cpu
     memory    = var.debug_service_configs[each.value].memory
     essential = true
@@ -80,9 +81,9 @@ resource "aws_ecs_task_definition" "debug_task_definitions" {
     }]
 
     environment = [
-      { name = "PORT", value = var.debug_service_configs[each.value].container_port },
-      { name = "DB_HOST", value = var.debug_databases["debug-${each.key}-db"].address },
-      { name = "DB_NAME", value = var.debug_databases["debug-${each.key}-db"].db_name },
+      { name = "PORT", value = tostring(var.debug_service_configs[each.value].container_port) },
+      { name = "DB_HOST", value = aws_db_instance.debug_db["debug-${each.key}-db"].address },
+      { name = "DB_NAME", value = var.debug_database_configs["debug-${each.key}-db"].db_name },
       { name = "DB_PORT", value = "5432" },
       { name = "DB_USERNAME", value = "postgres" },
       { name = "DB_PASSWORD", value = random_string.debug_db_pass["debug-${each.key}-db"].result },
