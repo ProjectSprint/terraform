@@ -27,15 +27,26 @@ variable "projectsprint_teams" {
   default = {
     "nanda" = {
       allow_view = true
-      ecs_instances = [{
-        vCpu                     = 256
-        memory                   = 512
-        autoscaleInstancesTo     = 1
-        cpuUtilizationTrigger    = 80
-        memoryUtilizationTrigger = 80
-        hasEcrImages             = false
-        useDbFromIndex           = 0 # example usage
-      }]
+      ecs_instances = [
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = false
+          useDbFromIndex           = 0 # example usage
+        },
+        { # newly added from one to two ecs
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = false
+          useDbFromIndex           = 0 # example usage
+        },
+      ]
       db_disk      = "standard",
       db_type      = "postgres",
       db_instances = ["t4g.micro"]
@@ -107,16 +118,6 @@ variable "projectsprint_teams" {
   }
 }
 
-locals {
-  team_ecs_configs = {
-    for team_name, config in var.projectsprint_teams : team_name => config
-    if length(config.ecs_instances) > 0
-  }
-  autoscaling_teams = {
-    for team_name, config in local.team_ecs_configs : team_name => config
-    if config.ecs_instances[0].autoscaleInstancesTo > 1
-  }
-}
 // https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-user#outputs
 module "projectsprint_iam_account" {
   for_each = var.projectsprint_teams

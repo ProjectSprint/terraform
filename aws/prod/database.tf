@@ -3,10 +3,11 @@ resource "aws_db_instance" "projectsprint_db" {
     for team, config in var.projectsprint_teams : {
       for idx, instance_type in config.db_instances :
       "${team}-${idx}" => {
-        team          = team
-        instance_type = instance_type
-        db_type       = config.db_type
-        db_disk       = config.db_disk
+        team     = team
+        instance = instance_type
+        idx      = idx
+        db_type  = config.db_type
+        db_disk  = config.db_disk
       }
     }
   ]...)
@@ -16,7 +17,7 @@ resource "aws_db_instance" "projectsprint_db" {
   engine_version = each.value.db_type == "postgres" ? "17.2" : (
     each.value.db_type == "mysql" ? "8.4.3" : "11.4.4"
   )
-  instance_class = "db.${each.value.instance_type}"
+  instance_class = "db.${each.value.instance}"
   identifier     = "projectsprint-${each.key}-db"
   storage_type   = each.value.db_disk
   username       = each.value.db_type == "postgres" ? "postgres" : "admin"
@@ -34,8 +35,10 @@ resource "aws_db_instance" "projectsprint_db" {
 
 
   tags = {
-    project = "projectsprint",
-    Name    = each.key
+    project      = "projectsprint",
+    name         = each.key
+    team_name    = each.value.team
+    instance_idx = each.value.idx
   }
 }
 
@@ -49,8 +52,9 @@ resource "random_string" "db_pass" {
     for team, config in var.projectsprint_teams : {
       for idx, instance_type in config.db_instances :
       "${team}-${idx}" => {
-        team          = team
-        instance_type = instance_type
+        team     = team
+        instance = instance_type
+        idx      = idx
       }
     }
   ]...)
