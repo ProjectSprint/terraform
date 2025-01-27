@@ -76,10 +76,21 @@ jq -r '
             null
           end
         ),
-        load_balancers: (
-          if $root.projectsprint_load_balancers.value[$team] then
-            if $root.projectsprint_load_balancers.value[$team] != {} then
-              $root.projectsprint_load_balancers.value[$team]
+        projectsprint_ec2: (
+          if $root.projectsprint_ec2.value[$team] then
+            if $root.projectsprint_ec2.value[$team] != {} then
+              $root.projectsprint_ec2.value[$team]
+            else
+              null
+            end
+          else
+            null
+          end
+        ),
+        ec2_load_balancers: (
+          if $root.projectsprint_ec2_load_balancers.value[$team] then
+            if $root.projectsprint_ec2_load_balancers.value[$team] != {} then
+              $root.projectsprint_ec2_load_balancers.value[$team]
             else
               null
             end

@@ -68,7 +68,7 @@ output "projectsprint_user_credentials" {
   }
   sensitive = true
 }
-output "projectsprint_load_balancers" {
+output "projectsprint_ec2_load_balancers" {
   value = {
     for acc, team in var.projectsprint_teams :
     acc => {

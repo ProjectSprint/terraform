@@ -26,7 +26,8 @@ variable "projectsprint_teams" {
 
   default = {
     "nanda" = {
-      allow_view = true
+      allow_view    = true
+      ec2_instances = ["t4g.nano"]
       ecs_instances = [
         #  {
         #    vCpu                     = 256
