@@ -27,6 +27,10 @@ module "debug_ecr" {
     ]
   })
 
+  providers = {
+    aws = aws.us-east-1
+  }
+
   tags = {
     project = "projectsprint",
     Name    = "debug-db"

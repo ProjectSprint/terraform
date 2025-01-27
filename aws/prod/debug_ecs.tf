@@ -45,8 +45,8 @@ resource "aws_ecs_service" "debug_services" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.debug_target_group.arn
-    container_name   = "debug-container"
-    container_port   = 8080
+    container_name   = each.value
+    container_port   = var.debug_service_configs[each.value].container_port
   }
 
   depends_on = [
