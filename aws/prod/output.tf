@@ -39,6 +39,7 @@ output "projectsprint_ecr" {
   sensitive   = true
   description = "projectsprint_ecr url info grouped by team"
 }
+
 output "projectsprint_db" {
   value = {
     for team, config in var.projectsprint_teams :
@@ -74,6 +75,19 @@ output "projectsprint_load_balancers" {
       dns = aws_lb.projectsprint_ec2[acc].dns_name
     }
     if team.ec2_load_balancer
+  }
+  sensitive = true
+}
+
+output "projectsprint_ecs_load_balancers" {
+  value = {
+    for team, config in var.projectsprint_teams :
+    team => {
+      for k, v in aws_lb.team_alb :
+      k => {
+        endpoint = v.dns_name
+      } if startswith(k, team)
+    }
   }
   sensitive = true
 }
