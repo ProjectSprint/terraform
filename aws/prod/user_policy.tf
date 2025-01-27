@@ -29,6 +29,8 @@ module "iam_policy_projectspint_ec2_view" {
           "ecr:Describe*",
           "ecr:Get*",
           "ecr:List*",
+          "ecr-public:Describe*",
+          "ecr-public:List*",
           "cloudformation:Describe*",
           "rds:Describe*",
           "rds:Get*",

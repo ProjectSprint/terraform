@@ -28,28 +28,19 @@ variable "projectsprint_teams" {
     "nanda" = {
       allow_view = true
       ecs_instances = [
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = false
-          useDbFromIndex           = 0 # example usage
-        },
-        { # newly added from one to two ecs
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = false
-          useDbFromIndex           = 0 # example usage
-        },
+        #  {
+        #    vCpu                     = 256
+        #    memory                   = 512
+        #    autoscaleInstancesTo     = 1
+        #    cpuUtilizationTrigger    = 80
+        #    memoryUtilizationTrigger = 80
+        #    hasEcrImages             = false
+        #    useDbFromIndex           = 0 # example usage
+        #  },
       ]
-      db_disk      = "standard",
-      db_type      = "postgres",
-      db_instances = ["t4g.micro"]
+      # db_disk      = "standard",
+      # db_type      = "postgres",
+      # db_instances = ["t4g.micro"]
     }
     "example" = {
       allow_view = true
@@ -60,6 +51,38 @@ variable "projectsprint_teams" {
     }
     "ngikut" = {
       allow_view = true
+      ecs_instances = [
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = false
+          useDbFromIndex           = 0 # example usage
+        },
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = false
+          useDbFromIndex           = 0
+        },
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = false
+          useDbFromIndex           = 0
+        },
+      ]
+      db_disk      = "standard",
+      db_type      = "postgres",
+      db_instances = ["t4g.micro"]
     }
     "6-letters" = {
       allow_view = true
