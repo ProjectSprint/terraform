@@ -19,7 +19,7 @@ resource "aws_service_discovery_service" "debug_discovery" {
 resource "aws_ecs_service" "debug_services" {
   for_each = toset(var.debug_services)
 
-  name            = each.value
+  name            = "debug-${each.value}-service"
   cluster         = aws_ecs_cluster.projectsprint.arn
   task_definition = aws_ecs_task_definition.debug_task_definitions[each.key].arn
   # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
@@ -45,7 +45,7 @@ resource "aws_ecs_service" "debug_services" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.debug_target_group.arn
-    container_name   = each.value
+    container_name   = "debug-${each.value}-task"
     container_port   = var.debug_service_configs[each.value].container_port
   }
 
@@ -68,7 +68,7 @@ resource "aws_ecs_task_definition" "debug_task_definitions" {
 
 
   container_definitions = jsonencode([{
-    name      = each.value
+    name      = "debug-${each.value}-task"
     image     = "${module.debug_ecr[each.value].repository_url}:latest"
     cpu       = var.debug_service_configs[each.value].cpu
     memory    = var.debug_service_configs[each.value].memory
