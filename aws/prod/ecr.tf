@@ -1,11 +1,30 @@
+locals {
+  team_ecs_configs = {
+    for team_name, config in var.projectsprint_teams : team_name => config
+    if length(config.ecs_instances) > 0
+  }
+}
 module "team_ecr" {
-  for_each = local.team_ecs_configs
-  source   = "terraform-aws-modules/ecr/aws"
+  for_each = merge([
+    for team, config in local.team_ecs_configs : {
+      for idx, instance in config.ecs_instances :
+      "${team}-${idx}" => {
+        team     = team
+        instance = instance
+        idx      = idx
+      }
+    }
+  ]...)
+  source = "terraform-aws-modules/ecr/aws"
 
+  providers = {
+    aws = aws.us-east-1
+  }
   repository_name                   = "${each.key}-repository"
+  repository_type                   = "public"
   repository_image_tag_mutability   = "MUTABLE"
   repository_force_delete           = true
-  repository_read_write_access_arns = [module.projectsprint_iam_account[each.key].iam_user_arn]
+  repository_read_write_access_arns = [module.projectsprint_iam_account[each.value.team].iam_user_arn]
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
@@ -25,18 +44,29 @@ module "team_ecr" {
   })
 
   tags = {
-    project = "projectsprint"
-    Name    = "${each.key}-repository"
+    project      = "projectsprint"
+    name         = each.key
+    team_name    = each.value.team
+    instance_idx = each.value.idx
   }
 }
 
 # ECR Policy per team
 module "team_ecr_policy" {
-  for_each = local.team_ecs_configs
-  source   = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version  = "5.37.1"
+  for_each = merge([
+    for team, config in local.team_ecs_configs : {
+      for idx, instance in config.ecs_instances :
+      "${team}-${idx}" => {
+        team     = team
+        instance = instance
+        idx      = idx
+      }
+    }
+  ]...)
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "5.37.1"
 
-  name = "${each.key}-ecr-${random_string.team_ecr_policy_suffix[each.key].result}"
+  name = "${each.key}-ecr"
   path = "/"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -53,9 +83,10 @@ module "team_ecr_policy" {
     ]
   })
   tags = {
-    project     = "projectsprint"
-    environment = "generated"
-    team_name   = each.key
+    project      = "projectsprint"
+    name         = each.key
+    team_name    = each.value.team
+    instance_idx = each.value.idx
   }
 }
 
@@ -67,8 +98,17 @@ resource "random_string" "team_ecr_policy_suffix" {
 }
 
 resource "aws_iam_user_policy_attachment" "team_ecr_policy" {
-  for_each   = local.team_ecs_configs
-  user       = module.projectsprint_iam_account[each.key].iam_user_name
+  for_each = merge([
+    for team, config in local.team_ecs_configs : {
+      for idx, instance in config.ecs_instances :
+      "${team}-${idx}" => {
+        team     = team
+        instance = instance
+        idx      = idx
+      }
+    }
+  ]...)
+  user       = module.projectsprint_iam_account[each.value.team].iam_user_name
   policy_arn = module.team_ecr_policy[each.key].arn
 }
 

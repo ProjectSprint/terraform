@@ -2,6 +2,16 @@ output "root_account_id" {
   value = data.aws_caller_identity.current.account_id
 }
 
+output "projectsprint_ops" {
+  value = {
+    private_ip = aws_instance.ops.private_ip
+    public_ip  = aws_instance.ops.public_ip
+  }
+  depends_on  = [aws_instance.ops]
+  sensitive   = true
+  description = "projectsprint operational IP addresse"
+}
+
 output "projectsprint_ec2" {
   value = {
     for team in distinct([for k, v in aws_instance.projectsprint_ec2 : split("_", k)[0]]) :
@@ -15,6 +25,20 @@ output "projectsprint_ec2" {
   description = "projectsprint_ec2 IP addresses grouped by team"
 }
 
+output "projectsprint_ecr" {
+  value = {
+    for team, config in var.projectsprint_teams :
+    team => {
+      for k, v in module.team_ecr :
+      k => {
+        endpoint = v.repository_url
+      } if startswith(k, team)
+    }
+  }
+  depends_on  = [module.team_ecr]
+  sensitive   = true
+  description = "projectsprint_ecr url info grouped by team"
+}
 output "projectsprint_db" {
   value = {
     for team, config in var.projectsprint_teams :

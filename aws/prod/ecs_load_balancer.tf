@@ -5,20 +5,22 @@ resource "aws_lb" "team_alb" {
       "${team}-${idx}" => {
         team     = team
         instance = instance
+        idx      = idx
       }
     }
   ]...)
 
-  name               = "${each.value.team}-${index(local.team_ecs_configs[each.value.team].ecs_instances, each.value.instance)}-alb"
+  name               = "${each.value.team}-${each.value.idx}-instance-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [module.projectsprint_all_sg.security_group_id]
   subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
 
   tags = {
-    project     = "projectsprint"
-    environment = "generated"
-    team_name   = each.value.team
+    project      = "projectsprint"
+    name         = each.key
+    team_name    = each.value.team
+    instance_idx = each.value.idx
   }
 }
 
@@ -29,11 +31,12 @@ resource "aws_lb_target_group" "team_target_groups" {
       "${team}-${idx}" => {
         team     = team
         instance = instance
+        idx      = idx
       }
     }
   ]...)
 
-  name        = "${each.value.team}-${index(local.team_ecs_configs[each.value.team].ecs_instances, each.value.instance)}-tg"
+  name        = "${each.value.team}-${each.value.idx}-instance-tg"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.projectsprint.id
@@ -46,9 +49,10 @@ resource "aws_lb_target_group" "team_target_groups" {
   }
 
   tags = {
-    project     = "projectsprint"
-    environment = "generated"
-    team_name   = each.value.team
+    project      = "projectsprint"
+    name         = each.key
+    team_name    = each.value.team
+    instance_idx = each.value.idx
   }
 }
 
@@ -59,6 +63,7 @@ resource "aws_lb_listener" "team_listeners" {
       "${team}-${idx}" => {
         team     = team
         instance = instance
+        idx      = idx
       }
     }
   ]...)
