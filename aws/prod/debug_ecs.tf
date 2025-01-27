@@ -45,7 +45,7 @@ resource "aws_ecs_service" "debug_services" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.debug_target_group.arn
-    container_name   = "debug-${each.value}-task"
+    container_name   = "debug-${each.value}-container-definition"
     container_port   = var.debug_service_configs[each.value].container_port
   }
 
@@ -58,7 +58,7 @@ resource "aws_ecs_service" "debug_services" {
 resource "aws_ecs_task_definition" "debug_task_definitions" {
   for_each = toset(var.debug_services)
 
-  family                   = each.value
+  family                   = "debug-${each.value}-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = var.debug_service_configs[each.value].cpu
@@ -68,7 +68,7 @@ resource "aws_ecs_task_definition" "debug_task_definitions" {
 
 
   container_definitions = jsonencode([{
-    name      = "debug-${each.value}-task"
+    name      = "debug-${each.value}-container-definition"
     image     = "${module.debug_ecr[each.value].repository_url}:latest"
     cpu       = var.debug_service_configs[each.value].cpu
     memory    = var.debug_service_configs[each.value].memory
