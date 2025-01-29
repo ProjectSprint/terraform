@@ -7,6 +7,10 @@ variable "projectsprint_teams" {
   type = map(object({
     ec2_instances     = optional(list(string), []) # t2.nano, t2.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
     ec2_load_balancer = optional(bool, false)
+    ecs_load_balancer = optional(list(object({ # this is the new variable
+      path       = string,
+      toEcsIndex = number,
+    })), null)
     ecs_instances = optional(list(object({
       vCpu                     = number,
       memory                   = number,
@@ -28,16 +32,35 @@ variable "projectsprint_teams" {
     "nanda" = {
       allow_view    = true
       ec2_instances = []
+      ecs_load_balancer = [
+        {
+          path       = "/",
+          toEcsIndex = 0
+        },
+        {
+          path       = "/user",
+          toEcsIndex = 1
+        },
+      ]
       ecs_instances = [
-        # {
-        #   vCpu                     = 256
-        #   memory                   = 512
-        #   autoscaleInstancesTo     = 1
-        #   cpuUtilizationTrigger    = 80
-        #   memoryUtilizationTrigger = 80
-        #   hasEcrImages             = true
-        #   # useDbFromIndex           = 0 # example usage
-        # },
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = true
+          # useDbFromIndex           = 0 # example usage
+        },
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = true
+          # useDbFromIndex           = 0 # example usage
+        },
       ]
       # db_disk      = "standard",
       # db_type      = "postgres",
@@ -52,6 +75,16 @@ variable "projectsprint_teams" {
     }
     "ngikut" = {
       allow_view = true
+      ecs_load_balancer = [
+        {
+          path       = "/",
+          toEcsIndex = 0
+        },
+        {
+          path       = "/",
+          toEcsIndex = 0
+        },
+      ]
       ecs_instances = [
         {
           vCpu                     = 256

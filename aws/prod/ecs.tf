@@ -21,6 +21,29 @@ locals {
       }
     ]
   }
+
+  # Teams with ECS instances and load balancer rules
+  teams_with_lb = {
+    for team, config in var.projectsprint_teams : team => config
+    if length(config.ecs_instances) > 0 && config.ecs_load_balancer != null
+  }
+
+  # Flatten ECS instances for target groups
+  ecs_target_groups = merge([
+    for team, config in var.projectsprint_teams : {
+      for idx, instance in config.ecs_instances : "${team}-${idx}" => {
+        team     = team
+        instance = instance
+        idx      = idx
+      }
+    }
+    if length(config.ecs_instances) > 0
+  ]...)
+
+  team_ecs_configs = {
+    for team_name, config in var.projectsprint_teams : team_name => config
+    if length(config.ecs_instances) > 0
+  }
 }
 # Service Discovery
 resource "aws_service_discovery_service" "team_discovery" {

@@ -1,9 +1,3 @@
-locals {
-  team_ecs_configs = {
-    for team_name, config in var.projectsprint_teams : team_name => config
-    if length(config.ecs_instances) > 0
-  }
-}
 module "team_ecr" {
   for_each = merge([
     for team, config in local.team_ecs_configs : {
