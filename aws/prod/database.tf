@@ -1,3 +1,31 @@
+# resource "aws_db_instance" "projectsprint_ops_db" {
+#   allocated_storage = 5
+#   engine            = "postgres"
+#   engine_version    = "17.2"
+#   instance_class    = "db.t4g.micro"
+#   identifier        = "projectsprint-ops-db"
+#   storage_type      = "standard"
+#   username          = "postgres"
+#   password          = random_string.db_pass[each.key].result
+#   parameter_group_name = "default.${each.value.db_type}${each.value.db_type == "postgres" ? "17" : (
+#     each.value.db_type == "mysql" ? "8.4" : "11.4"
+#   )}"
+#   skip_final_snapshot = true
+# 
+#   storage_encrypted   = false
+#   deletion_protection = false
+# 
+#   vpc_security_group_ids = [aws_security_group.projectsprint_db.id]
+#   db_subnet_group_name   = aws_db_subnet_group.projectsprint_db.name
+# 
+# 
+#   tags = {
+#     project      = "projectsprint",
+#     name         = each.key
+#     team_name    = each.value.team
+#     instance_idx = each.value.idx
+#   }
+# }
 resource "aws_db_instance" "projectsprint_db" {
   for_each = merge([
     for team, config in var.projectsprint_teams : {

@@ -41,13 +41,6 @@ resource "aws_security_group" "proxy" {
   }
 
   ingress {
-    from_port   = 3128
-    to_port     = 3128
-    protocol    = "tcp"
-    cidr_blocks = [aws_vpc.projectsprint.cidr_block]
-  }
-
-  ingress {
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"

@@ -75,6 +75,11 @@ resource "aws_ecs_task_definition" "example_task" {
   execution_role_arn       = aws_iam_role.projectsprint_ecs_task_execution.arn
   task_role_arn            = aws_iam_role.projectsprint_ecs_task.arn
 
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "ARM64"
+  }
+
   container_definitions = jsonencode([{
     name      = "example-container"
     image     = "${module.example_ecr.repository_url}:latest"
