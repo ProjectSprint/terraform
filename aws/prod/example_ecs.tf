@@ -28,7 +28,7 @@ resource "aws_ecs_service" "example_service" {
   cluster         = aws_ecs_cluster.projectsprint.arn
   task_definition = aws_ecs_task_definition.example_task.arn
   # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
-  desired_count = 1
+  desired_count = 0
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"

@@ -14,7 +14,7 @@ variable "projectsprint_teams" {
       cpuUtilizationTrigger    = number,
       memoryUtilizationTrigger = number,
       hasEcrImages             = bool,
-      useDbFromIndex           = number, # this is the new variable
+      useDbFromIndex           = optional(number, null),
     })), [])
     db_type          = optional(string, "")
     db_disk          = optional(string, "")       # standard, gp2
@@ -29,15 +29,15 @@ variable "projectsprint_teams" {
       allow_view    = true
       ec2_instances = ["t4g.nano"]
       ecs_instances = [
-        #  {
-        #    vCpu                     = 256
-        #    memory                   = 512
-        #    autoscaleInstancesTo     = 1
-        #    cpuUtilizationTrigger    = 80
-        #    memoryUtilizationTrigger = 80
-        #    hasEcrImages             = false
-        #    useDbFromIndex           = 0 # example usage
-        #  },
+        {
+          vCpu                     = 256
+          memory                   = 512
+          autoscaleInstancesTo     = 1
+          cpuUtilizationTrigger    = 80
+          memoryUtilizationTrigger = 80
+          hasEcrImages             = true
+          # useDbFromIndex           = 0 # example usage
+        },
       ]
       # db_disk      = "standard",
       # db_type      = "postgres",
