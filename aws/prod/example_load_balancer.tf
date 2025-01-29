@@ -73,9 +73,20 @@ resource "aws_lb_listener" "example_lb_listener" {
   port              = "80"
   protocol          = "HTTP"
 
+  # (for just ordinary load balancer)
+  # default_action {
+  #   type             = "forward"
+  #   target_group_arn = aws_lb_target_group.example_target_group.arn
+  # }
+
+  # (for load balancer with path-based routing) Default action to return 404
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.example_target_group.arn
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No matching route found"
+      status_code  = "404"
+    }
   }
 
   # want custom pathing? Checkout:
@@ -86,5 +97,43 @@ resource "aws_lb_listener" "example_lb_listener" {
     team_name   = "example"
   }
 
+}
+
+# (for load balancer with path-based routing, comment if not used)
+resource "aws_lb_listener_rule" "example_route_root" {
+  listener_arn = aws_lb_listener.example_lb_listener.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.example_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
+  }
+  depends_on = [
+    aws_lb_target_group.example_target_group
+  ]
+}
+
+# (for load balancer with path-based routing, comment if not used)
+resource "aws_lb_listener_rule" "example_route_user" {
+  listener_arn = aws_lb_listener.example_lb_listener.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.example_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/user"]
+    }
+  }
+  depends_on = [
+    aws_lb_target_group.example_target_group
+  ]
 }
 
