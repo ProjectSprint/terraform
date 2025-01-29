@@ -132,6 +132,8 @@ resource "aws_instance" "ops" {
   }
 }
 
+# TODO: separate this to be path based listener like ecs did
+# but one path, can have multiple ec2 targets
 resource "aws_lb_target_group" "projectsprint_ec2" {
   for_each = {
     for team, config in var.projectsprint_teams : team => config
