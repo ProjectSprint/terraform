@@ -61,6 +61,21 @@ jq -r '
             null
           end
         ),
+        ecs_service_discovery: (
+          if $root.projectsprint_ecs_discovery.value[$team] then
+            if $root.projectsprint_ecs_discovery.value[$team] != {} then
+              [$root.projectsprint_ecs_discovery.value[$team] | to_entries[] |
+              {
+                name: .key,
+                endpoint: .value.endpoint
+              }]
+            else
+              null
+            end
+          else
+            null
+          end
+        ),
         ecs_load_balancers: (
           if $root.projectsprint_ecs_load_balancers.value[$team] then
             if $root.projectsprint_ecs_load_balancers.value[$team] != {} then

@@ -25,6 +25,21 @@ output "projectsprint_ec2" {
   description = "projectsprint_ec2 IP addresses grouped by team"
 }
 
+output "projectsprint_ecs_discovery" {
+  value = {
+    for team, config in var.projectsprint_teams :
+    team => {
+      for k, v in aws_service_discovery_service.team_discovery :
+      k => {
+        endpoint = "${k}-ecs-discovery"
+      } if startswith(k, team)
+    }
+  }
+  depends_on  = [module.team_ecr]
+  sensitive   = true
+  description = "projectsprint_ecr url info grouped by team"
+}
+
 output "projectsprint_ecr" {
   value = {
     for team, config in var.projectsprint_teams :
