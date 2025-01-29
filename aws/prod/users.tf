@@ -27,17 +27,17 @@ variable "projectsprint_teams" {
   default = {
     "nanda" = {
       allow_view    = true
-      ec2_instances = ["t4g.nano"]
+      ec2_instances = []
       ecs_instances = [
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = true
-          # useDbFromIndex           = 0 # example usage
-        },
+        # {
+        #   vCpu                     = 256
+        #   memory                   = 512
+        #   autoscaleInstancesTo     = 1
+        #   cpuUtilizationTrigger    = 80
+        #   memoryUtilizationTrigger = 80
+        #   hasEcrImages             = true
+        #   # useDbFromIndex           = 0 # example usage
+        # },
       ]
       # db_disk      = "standard",
       # db_type      = "postgres",
@@ -59,7 +59,7 @@ variable "projectsprint_teams" {
           autoscaleInstancesTo     = 1
           cpuUtilizationTrigger    = 80
           memoryUtilizationTrigger = 80
-          hasEcrImages             = false
+          hasEcrImages             = true
           useDbFromIndex           = 0 # example usage
         },
         {
