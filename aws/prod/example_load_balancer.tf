@@ -22,6 +22,7 @@ resource "aws_lb_target_group" "example_target_group" {
     # this is here because target group can't be destroyed when it's in use
     create_before_destroy = true
   }
+
   tags = {
     project     = "projectsprint"
     environment = "development" # or production
@@ -39,19 +40,31 @@ resource "random_string" "example_target_group_suffix" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 resource "aws_lb" "example_lb" {
-  name               = "example-lb"
-  internal           = true
+  name               = "example-lb-${random_string.example_load_balancer_suffix.result}"
+  internal           = false
   load_balancer_type = "application"
   security_groups    = [module.projectsprint_all_sg.security_group_id]
   subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
 
   enable_deletion_protection = false
+  lifecycle {
+    # this is here because load balancer needs to be created first in order to the listener can attach it properly
+    create_before_destroy = true
+  }
 
   tags = {
     project     = "projectsprint"
     environment = "development" # or production
     team_name   = "example"
   }
+}
+
+resource "random_string" "example_load_balancer_suffix" {
+  length  = 3
+  special = false
+  upper   = false
+  lower   = true
+  numeric = false
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener_rule
@@ -65,10 +78,6 @@ resource "aws_lb_listener" "example_lb_listener" {
     target_group_arn = aws_lb_target_group.example_target_group.arn
   }
 
-  lifecycle {
-    # this is here because listener can't be destroyed when it's in use
-    create_before_destroy = true
-  }
   # want custom pathing? Checkout:
   # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener_rule
   tags = {
@@ -76,5 +85,6 @@ resource "aws_lb_listener" "example_lb_listener" {
     environment = "development" # or production
     team_name   = "example"
   }
+
 }
 

@@ -1,7 +1,8 @@
 # Application Auto Scaling Target
 resource "aws_appautoscaling_target" "example_target" {
-  max_capacity       = 4
-  min_capacity       = 1
+  max_capacity = 4
+  # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
+  min_capacity       = 0
   resource_id        = "service/${aws_ecs_cluster.projectsprint.name}/${aws_ecs_service.example_service.name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"

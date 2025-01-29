@@ -10,11 +10,17 @@ resource "aws_lb" "team_alb" {
     }
   ]...)
 
-  name               = "${each.value.team}-${each.value.idx}-instance-alb"
-  internal           = false
+  name               = "${each.value.team}-${each.value.idx}-${random_string.team_load_balancer_suffix.result}"
+  internal           = true
   load_balancer_type = "application"
   security_groups    = [module.projectsprint_all_sg.security_group_id]
   subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
+
+
+  lifecycle {
+    # this is here because load balancer needs to be created first in order to the listener can attach it properly
+    create_before_destroy = true
+  }
 
   tags = {
     project      = "projectsprint"
@@ -22,6 +28,14 @@ resource "aws_lb" "team_alb" {
     team_name    = each.value.team
     instance_idx = each.value.idx
   }
+}
+
+resource "random_string" "team_load_balancer_suffix" {
+  length  = 3
+  special = false
+  upper   = false
+  lower   = true
+  numeric = false
 }
 
 resource "aws_lb_target_group" "team_target_groups" {

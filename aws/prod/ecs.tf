@@ -143,29 +143,32 @@ resource "aws_ecs_task_definition" "team_tasks" {
       protocol      = "tcp"
     }]
 
-    environment = [
+    environment = concat([
       { name = "PORT", value = "8080" },
       { name = "AWS_ACCESS_KEY_ID", value = module.projectsprint_iam_account[each.value.team].iam_access_key_id },
       { name = "AWS_SECRET_ACCESS_KEY", value = module.projectsprint_iam_account[each.value.team].iam_access_key_secret },
       { name = "AWS_S3_BUCKET_NAME", value = "projectsprint-bucket-public-read" },
-      { name = "AWS_REGION", value = var.region },
-      {
-        name  = "DB_USER",
-        value = var.projectsprint_teams[each.value.team].db_type == "postgres" ? "postgres" : "admin"
-      },
-      {
-        name  = "DB_PASS",
-        value = random_string.db_pass["${each.value.team}-${each.value.instance.useDbFromIndex}"].result
-      },
-      {
-        name  = "DB_HOST",
-        value = aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].address
-      },
-      {
-        name  = "DB_PORT",
-        value = tostring(aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].port)
-      }
-    ]
+      { name = "AWS_REGION", value = var.region }
+      ],
+      # Only add DB environment variables if useDbFromIndex is set
+      try(each.value.instance.useDbFromIndex != null ? [
+        {
+          name  = "DB_USER",
+          value = var.projectsprint_teams[each.value.team].db_type == "postgres" ? "postgres" : "admin"
+        },
+        {
+          name  = "DB_PASS",
+          value = random_string.db_pass["${each.value.team}-${each.value.instance.useDbFromIndex}"].result
+        },
+        {
+          name  = "DB_HOST",
+          value = aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].address
+        },
+        {
+          name  = "DB_PORT",
+          value = tostring(aws_db_instance.projectsprint_db["${each.value.team}-${each.value.instance.useDbFromIndex}"].port)
+        }
+    ] : [], []))
   }])
 
   tags = {

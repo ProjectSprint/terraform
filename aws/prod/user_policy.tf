@@ -31,6 +31,10 @@ module "iam_policy_projectspint_ec2_view" {
           "ecr:List*",
           "ecr-public:Describe*",
           "ecr-public:List*",
+          "ecr-public:Get*",
+          "sts:Get*",
+          "ecs:Stop*",   # separate this into new policy
+          "ecs:Update*", # separate this into new policy
           "cloudformation:Describe*",
           "rds:Describe*",
           "rds:Get*",

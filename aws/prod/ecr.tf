@@ -74,7 +74,10 @@ module "team_ecr_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ecr:*"
+          "ecr:*",
+          "ecr:BatchDeleteImage",
+          "ecr-public:*",
+          "sts:Get*",
         ]
         Resource = [
           module.team_ecr[each.key].repository_arn

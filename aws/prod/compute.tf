@@ -171,6 +171,10 @@ resource "aws_lb" "projectsprint_ec2" {
     Name    = "projectsprint-${each.key}-load-balancer"
     project = "projectsprint"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lb_listener" "projectsprint_ec2" {
