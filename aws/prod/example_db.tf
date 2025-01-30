@@ -16,6 +16,10 @@ resource "aws_db_instance" "example_db" {
   vpc_security_group_ids = [aws_security_group.projectsprint_db.id]
   db_subnet_group_name   = aws_db_subnet_group.projectsprint_db.name
 
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+  monitoring_interval                   = 10
+  monitoring_role_arn                   = aws_iam_role.rds_enhanced_monitoring.arn
 
   tags = {
     project     = "projectsprint"

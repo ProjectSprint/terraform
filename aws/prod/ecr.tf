@@ -69,7 +69,6 @@ module "team_ecr_policy" {
         Effect = "Allow"
         Action = [
           "ecr:*",
-          "ecr:BatchDeleteImage",
           "ecr-public:*",
           "sts:Get*",
         ]

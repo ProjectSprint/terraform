@@ -1,5 +1,10 @@
 resource "aws_ecs_cluster" "projectsprint" {
   name = "projectsprint"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "projectsprint_development" {

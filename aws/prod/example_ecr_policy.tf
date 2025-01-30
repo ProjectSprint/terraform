@@ -12,7 +12,8 @@ module "example_ecr_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ecr:*"
+          "ecr:*",
+          "ecr-public:*"
         ]
         Resource = [
           module.example_ecr.repository_arn

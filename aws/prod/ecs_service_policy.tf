@@ -42,7 +42,14 @@ resource "aws_iam_role_policy" "projectsprint_ecs_task_execution" {
           "appmesh:DescribeVirtualNode",
           "appmesh:DescribeVirtualService",
           "appmesh:ListVirtualNodes",
-          "appmesh:ListVirtualServices"
+          "appmesh:ListVirtualServices",
+          "ecr-public:GetAuthorizationToken",
+          "ecr-public:BatchCheckLayerAvailability",
+          "ecr-public:GetRepositoryPolicy",
+          "ecr-public:DescribeRepositories",
+          "ecr-public:DescribeRegistries",
+          "ecr-public:DescribeImages",
+          "sts:GetServiceBearerToken"
         ],
         Resource = "*"
       }

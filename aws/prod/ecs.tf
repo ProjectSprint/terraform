@@ -95,10 +95,11 @@ resource "aws_ecs_service" "team_services" {
     }
   ]...)
 
-  name            = "${each.key}-service"
-  cluster         = aws_ecs_cluster.projectsprint.arn
-  task_definition = aws_ecs_task_definition.team_tasks[each.key].arn
-  desired_count   = each.value.instance.hasEcrImages ? 1 : 0
+  name                              = "${each.key}-service"
+  cluster                           = aws_ecs_cluster.projectsprint.arn
+  task_definition                   = aws_ecs_task_definition.team_tasks[each.key].arn
+  desired_count                     = each.value.instance.hasEcrImages ? 1 : 0
+  health_check_grace_period_seconds = 20
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
@@ -170,6 +171,23 @@ resource "aws_ecs_task_definition" "team_tasks" {
       hostPort      = 8080
       protocol      = "tcp"
     }]
+
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        "awslogs-group"         = aws_cloudwatch_log_group.team_logs[each.key].name
+        "awslogs-region"        = var.region
+        "awslogs-stream-prefix" = "ecs"
+      }
+    }
+
+    healthCheck = {
+      command     = ["CMD-SHELL", "curl -f http://localhost:8080/healthz || exit 1"]
+      interval    = 30
+      timeout     = 5
+      retries     = 3
+      startPeriod = 10
+    }
 
     environment = concat([
       { name = "PORT", value = "8080" },
