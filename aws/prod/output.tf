@@ -2,6 +2,20 @@ output "root_account_id" {
   value = data.aws_caller_identity.current.account_id
 }
 
+output "projectsprint_monitoring" {
+  value = {
+    private_ip = aws_instance.monitoring.private_ip
+    public_ip  = aws_instance.monitoring.public_ip
+    username   = module.projectsprint_monitoring_iam_account.iam_user_name
+    password   = module.projectsprint_monitoring_iam_account.iam_user_login_profile_password
+    access_key = module.projectsprint_monitoring_iam_account.iam_access_key_id
+    secret_key = module.projectsprint_monitoring_iam_account.iam_access_key_secret
+  }
+  depends_on  = [aws_instance.monitoring]
+  sensitive   = true
+  description = "projectsprint monitoring instance IP address"
+}
+
 output "projectsprint_proxy" {
   value = {
     private_ip = aws_instance.proxy.private_ip
@@ -9,7 +23,7 @@ output "projectsprint_proxy" {
   }
   depends_on  = [aws_instance.proxy]
   sensitive   = true
-  description = "projectsprint operational IP addresse"
+  description = "projectsprint proxy IP address"
 }
 
 output "projectsprint_ec2" {

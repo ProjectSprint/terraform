@@ -48,7 +48,7 @@ resource "aws_instance" "projectsprint_ec2" {
   # Append new proxy settings
   cat >> /etc/environment << 'EOL'
   http_proxy=http://${aws_instance.proxy.private_ip}:3128
-  https_proxY=http://${aws_instance.proxy.private_ip}:3128
+  https_proxy=http://${aws_instance.proxy.private_ip}:3128
   no_proxy=localhost,127.0.0.1,169.254.169.254
   HTTP_PROXY=http://${aws_instance.proxy.private_ip}:3128
   HTTPS_PROXY=http://${aws_instance.proxy.private_ip}:3128
@@ -77,6 +77,22 @@ resource "aws_instance" "projectsprint_ec2" {
     project = "projectsprint",
     Name    = "projectsprint-${each.key}-vm",
     team    = each.value.team
+  }
+}
+
+resource "aws_instance" "monitoring" {
+  ami                         = "ami-08e5da245c78d5f03"
+  instance_type               = "t4g.nano"
+  subnet_id                   = aws_subnet.public_a.id
+  associate_public_ip_address = true
+  vpc_security_group_ids = [
+    aws_security_group.monitoring.id
+  ]
+  key_name = aws_key_pair.projectsprint.key_name
+
+  tags = {
+    Name    = "projectsprint-monitoring"
+    project = "projectsprint"
   }
 }
 

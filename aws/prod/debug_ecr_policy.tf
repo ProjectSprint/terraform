@@ -11,7 +11,8 @@ module "debug_ecr_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ecr:*"
+          "ecr:*",
+          "ecr-public:*"
         ]
         Resource = [
           for service in var.debug_services :

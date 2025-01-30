@@ -23,7 +23,8 @@ resource "aws_ecs_service" "debug_services" {
   cluster         = aws_ecs_cluster.projectsprint.arn
   task_definition = aws_ecs_task_definition.debug_task_definitions[each.key].arn
   # IF THE ECR IS STILL EMPTY, CHANGE THIS TO 0!
-  desired_count = var.debug_service_configs[each.key].instance_count
+  desired_count                     = var.debug_service_configs[each.key].instance_count
+  health_check_grace_period_seconds = 20
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE_SPOT"
@@ -112,7 +113,7 @@ resource "aws_ecs_task_definition" "debug_task_definitions" {
       interval    = 30
       timeout     = 5
       retries     = 3
-      startPeriod = 0
+      startPeriod = 10
     }
   }])
   tags = {

@@ -82,7 +82,11 @@ variable "projectsprint_teams" {
         },
         {
           path       = "/",
-          toEcsIndex = 0
+          toEcsIndex = 1
+        },
+        {
+          path       = "/",
+          toEcsIndex = 2
         },
       ]
       ecs_instances = [
@@ -175,7 +179,6 @@ variable "projectsprint_teams" {
   }
 }
 
-// https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-user#outputs
 module "projectsprint_iam_account" {
   for_each = var.projectsprint_teams
   source   = "terraform-aws-modules/iam/aws//modules/iam-user"
@@ -200,6 +203,20 @@ resource "aws_iam_group_membership" "projectsprint_team" {
   name  = "projectsprint-team"
   users = [for account in module.projectsprint_iam_account : account.iam_user_name]
   group = aws_iam_group.projectsprint_developers.name
+}
+
+# monitoring account
+module "projectsprint_monitoring_iam_account" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-user"
+
+  version = "5.33.0"
+
+  name = "projectsprint-monitoring"
+
+  force_destroy                 = true
+  create_iam_user_login_profile = true
+  password_length               = 8
+  password_reset_required       = false
 }
 
 data "aws_iam_user" "current_user" {
