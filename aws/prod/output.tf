@@ -2,12 +2,12 @@ output "root_account_id" {
   value = data.aws_caller_identity.current.account_id
 }
 
-output "projectsprint_ops" {
+output "projectsprint_proxy" {
   value = {
-    private_ip = aws_instance.ops.private_ip
-    public_ip  = aws_instance.ops.public_ip
+    private_ip = aws_instance.proxy.private_ip
+    public_ip  = aws_instance.proxy.public_ip
   }
-  depends_on  = [aws_instance.ops]
+  depends_on  = [aws_instance.proxy]
   sensitive   = true
   description = "projectsprint operational IP addresse"
 }
