@@ -40,32 +40,32 @@ resource "aws_instance" "projectsprint_ec2" {
   # Add user_data to configure proxy for all instances
   user_data = each.value.allow_internet ? null : <<-EOF
   #!/bin/bash
-  if ! grep -q "HTTP_PROXY=http://${aws_instance.ops.private_ip}:3128" /etc/environment; then
+  if ! grep -q "HTTP_PROXY=http://${aws_instance.proxy.private_ip}:3128" /etc/environment; then
 
   # Remove any existing proxy settings
   sed -i '/HTTP_PROXY=/d; /HTTPS_PROXY=/d; /NO_PROXY=/d; /http_proxy=/d; /https_proxy=/d; /no_proxy=/d' /etc/environment
   
   # Append new proxy settings
   cat >> /etc/environment << 'EOL'
-  http_proxy=http://${aws_instance.ops.private_ip}:3128
-  https_proxY=http://${aws_instance.ops.private_ip}:3128
+  http_proxy=http://${aws_instance.proxy.private_ip}:3128
+  https_proxY=http://${aws_instance.proxy.private_ip}:3128
   no_proxy=localhost,127.0.0.1,169.254.169.254
-  HTTP_PROXY=http://${aws_instance.ops.private_ip}:3128
-  HTTPS_PROXY=http://${aws_instance.ops.private_ip}:3128
+  HTTP_PROXY=http://${aws_instance.proxy.private_ip}:3128
+  HTTPS_PROXY=http://${aws_instance.proxy.private_ip}:3128
   NO_PROXY=localhost,127.0.0.1,169.254.169.254
   EOL
 
   fi;
 
-  if [ ! -f /etc/apt/apt.conf.d/00proxy ] || ! grep -q "${aws_instance.ops.private_ip}" /etc/apt/apt.conf.d/00proxy; then
+  if [ ! -f /etc/apt/apt.conf.d/00proxy ] || ! grep -q "${aws_instance.proxy.private_ip}" /etc/apt/apt.conf.d/00proxy; then
   
   # Remove any existing proxy settings
   sed -i '/Acquire::http::Proxy/d; /Acquire::https::Proxy/d' /etc/apt/apt.conf.d/00proxy
   
   # Append new proxy settings
   cat >> /etc/apt/apt.conf.d/00proxy << 'EOL'
-  Acquire::http::Proxy "http://${aws_instance.ops.private_ip}:3128";
-  Acquire::https::Proxy "http://${aws_instance.ops.private_ip}:3128";
+  Acquire::http::Proxy "http://${aws_instance.proxy.private_ip}:3128";
+  Acquire::https::Proxy "http://${aws_instance.proxy.private_ip}:3128";
   EOL
 
   fi;
@@ -80,9 +80,9 @@ resource "aws_instance" "projectsprint_ec2" {
   }
 }
 
-resource "aws_instance" "ops" {
+resource "aws_instance" "proxy" {
   ami           = "ami-08e5da245c78d5f03"
-  instance_type = "t4g.micro"
+  instance_type = "t4g.nano"
   subnet_id     = aws_subnet.public_a.id
   vpc_security_group_ids = [
     aws_security_group.proxy.id,
@@ -127,7 +127,7 @@ resource "aws_instance" "ops" {
               EOF
 
   tags = {
-    Name    = "projectsprint-ops"
+    Name    = "projectsprint-proxy"
     project = "projectsprint"
   }
 }
