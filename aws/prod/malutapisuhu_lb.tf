@@ -1,7 +1,6 @@
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group
 resource "aws_lb_target_group" "malutapisuhu_target_group" {
   # use random string as suffix because if modified and gets recreatd, target group with the same name is not allowed
-  name        = "malutapisuhu-tg-${random_string.malutapisuhu_target_group_suffix.result}"
+  name        = "malutapisuhu-tg-${random_string.malutapisuhu_lb.result}"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.projectsprint.id
@@ -29,13 +28,63 @@ resource "aws_lb_target_group" "malutapisuhu_target_group" {
   }
 }
 
-# https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string
-resource "random_string" "malutapisuhu_target_group_suffix" {
-  length  = 4
-  special = false
-  upper   = false
+resource "aws_lb_target_group" "ms_upp_svc_target_group" {
+  name        = "ms-upp-svc-tg"
+  port        = var.malutapisuhu_service_configs["ms-upp-svc"].container_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.projectsprint.id
+  target_type = "ip"
+  health_check {
+    enabled             = true
+    healthy_threshold   = 3
+    interval            = 30
+    matcher             = "200"
+    path                = "/"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development"
+    team_name   = "malutapisuhu"
+  }
 }
 
+resource "aws_lb_target_group" "ms_product_svc_target_group" {
+  name        = "ms-product-svc-tg"
+  port        = var.malutapisuhu_service_configs["ms-product-svc"].container_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.projectsprint.id
+  target_type = "ip"
+  health_check {
+    enabled             = true
+    healthy_threshold   = 3
+    interval            = 30
+    matcher             = "200"
+    path                = "/"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development"
+    team_name   = "malutapisuhu"
+  }
+}
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 resource "aws_lb" "malutapisuhu_lb" {
@@ -75,3 +124,53 @@ resource "aws_lb_listener" "malutapisuhu_lb_listener" {
   }
 }
 
+resource "aws_lb_listener_rule" "ms_upp_svc_listener_rule" {
+  listener_arn = aws_lb_listener.malutapisuhu_lb_listener.arn
+  priority     = 100
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ms_upp_svc_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/v1/*"]
+    }
+  }
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development"
+    team_name   = "malutapisuhu"
+  }
+}
+
+resource "aws_lb_listener_rule" "ms_product_svc_listener_rule" {
+  listener_arn = aws_lb_listener.malutapisuhu_lb_listener.arn
+  priority     = 200
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ms_product_svc_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/v1/products/*"]
+    }
+  }
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development"
+    team_name   = "malutapisuhu"
+  }
+}
+resource "random_string" "malutapisuhu_lb" {
+  length  = 4
+  special = false
+  upper   = true
+  lower   = true
+  numeric = true
+}
