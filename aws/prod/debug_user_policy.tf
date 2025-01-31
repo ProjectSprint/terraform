@@ -64,7 +64,7 @@ resource "aws_iam_policy" "debug_user_policy" {
         Action = [
           "ecr:*",
         ]
-        Resource = "arn:aws:ecr:ap-southeast-1:024848467457:repository/example-app/example-1/*"
+        Resource = "arn:aws:ecr:ap-southeast-1:024848467457:repository/example-app/example-1*"
       },
       {
         Effect = "Allow"
