@@ -2,7 +2,7 @@
 resource "aws_lb" "team_alb" {
   for_each = local.teams_with_lb
 
-  name               = "${each.key}-alb-${random_string.team_load_balancer_suffix.result}"
+  name               = "${each.key}-alb-${random_string.team_load_balancer_suffix[each.key].result}"
   internal           = true
   load_balancer_type = "application"
   security_groups    = [module.projectsprint_all_sg.security_group_id]
@@ -17,6 +17,7 @@ resource "aws_lb" "team_alb" {
   }
 }
 resource "random_string" "team_load_balancer_suffix" {
+  for_each = local.teams_with_lb
   length  = 3
   special = false
   upper   = false

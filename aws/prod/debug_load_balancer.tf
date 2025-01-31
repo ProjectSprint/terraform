@@ -37,11 +37,10 @@ resource "random_string" "debug_target_group_suffix" {
   upper   = false
 }
 
-
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 resource "aws_lb" "debug_lb" {
   name               = "debug-lb-${random_string.debug_load_balancer_suffix.result}"
-  internal           = false
+  internal           = true
   load_balancer_type = "application"
   security_groups    = [module.projectsprint_all_sg.security_group_id]
   subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
