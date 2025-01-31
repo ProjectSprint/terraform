@@ -37,11 +37,10 @@ resource "random_string" "example_target_group_suffix" {
   upper   = false
 }
 
-
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
 resource "aws_lb" "example_lb" {
   name               = "example-lb-${random_string.example_load_balancer_suffix.result}"
-  internal           = false
+  internal           = true
   load_balancer_type = "application"
   security_groups    = [module.projectsprint_all_sg.security_group_id]
   subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
@@ -100,40 +99,40 @@ resource "aws_lb_listener" "example_lb_listener" {
 }
 
 # (for load balancer with path-based routing, comment if not used)
-resource "aws_lb_listener_rule" "example_route_root" {
-  listener_arn = aws_lb_listener.example_lb_listener.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.example_target_group.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/"]
-    }
-  }
-  depends_on = [
-    aws_lb_target_group.example_target_group
-  ]
-}
+#resource "aws_lb_listener_rule" "example_route_root" {
+#  listener_arn = aws_lb_listener.example_lb_listener.arn
+#
+#  action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.example_target_group.arn
+#  }
+#
+#  condition {
+#    path_pattern {
+#      values = ["/"]
+#    }
+#  }
+#  depends_on = [
+#    aws_lb_target_group.example_target_group
+#  ]
+#}
 
 # (for load balancer with path-based routing, comment if not used)
-resource "aws_lb_listener_rule" "example_route_user" {
-  listener_arn = aws_lb_listener.example_lb_listener.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.example_target_group.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/user"]
-    }
-  }
-  depends_on = [
-    aws_lb_target_group.example_target_group
-  ]
-}
+#resource "aws_lb_listener_rule" "example_route_user" {
+#  listener_arn = aws_lb_listener.example_lb_listener.arn
+#
+#  action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.example_target_group.arn
+#  }
+#
+#  condition {
+#    path_pattern {
+#      values = ["/user"]
+#    }
+#  }
+#  depends_on = [
+#    aws_lb_target_group.example_target_group
+#  ]
+#}
 

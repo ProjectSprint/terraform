@@ -13,10 +13,10 @@ module "example_ecr_policy" {
         Effect = "Allow"
         Action = [
           "ecr:*",
-          "ecr-public:*"
         ]
         Resource = [
-          module.example_ecr.repository_arn
+          "arn:aws:ecr:ap-southeast-1:${data.aws_caller_identity.current.account_id }:repository/example-service",
+          "arn:aws:ecr:ap-southeast-1:${data.aws_caller_identity.current.account_id }:repository/example-service/*"
         ]
       },
     ]
