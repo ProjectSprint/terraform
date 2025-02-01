@@ -19,15 +19,6 @@ resource "aws_iam_policy" "debug_user_policy" {
         ]
         Resource = "arn:aws:iam::024848467457:role/example-app*"
       },
-      #{
-      #  Effect = "Allow"
-      #  Action = [
-      #    "s3:CreateBucket",
-      #    "s3:PutBucketPolicy",
-      #    "s3:DeleteObjectVersion",
-      #  ]
-      #  Resource = "arn:aws:s3:::stackset-example-app*"
-      #},
       {
         Effect = "Allow"
         Action = [
