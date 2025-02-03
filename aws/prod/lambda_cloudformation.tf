@@ -1,25 +1,24 @@
-// main.tf
-resource "null_resource" "lambda_dependencies" {
+resource "null_resource" "lambda_cloudformation_hook_dependencies" {
   triggers = {
-    dependencies_versions = filemd5("${path.module}/lambda_cloudformation/package.json")
-    source_versions       = filemd5("${path.module}/lambda_cloudformation/index.js") # Added source file tracking
+    dependencies_versions = filemd5("${path.module}/lambda_cloudformation_hook/package.json")
+    source_versions       = filemd5("${path.module}/lambda_cloudformation_hook/index.js")
   }
   provisioner "local-exec" {
-    command = "cd ${path.module}/lambda_cloudformation && npm install --production" # Added --production flag
+    command = "cd ${path.module}/lambda_cloudformation_hook && npm install --production"
   }
 }
 
 // Archive the Lambda function code
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda"
-  output_path = "${path.module}/files/iam_attach_hook.zip" # Changed path to avoid recursion
-  depends_on  = [null_resource.lambda_dependencies]        # Added dependency
+  source_dir  = "${path.module}/lambda_cloudformation_hook"
+  output_path = "${path.module}/files/lambda_cloudformation_hook.zip"
+  depends_on  = [null_resource.lambda_cloudformation_hook_dependencies]
 }
 
 // IAM role for the Lambda function
-resource "aws_iam_role" "iam_monitor_lambda_role" {
-  name = "iam_monitor_lambda_role"
+resource "aws_iam_role" "iam_lambda_cloudformation_hook" {
+  name = "iam_lambda_cloudformation_hook"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -37,7 +36,7 @@ resource "aws_iam_role" "iam_monitor_lambda_role" {
 // CloudWatch Logs policy for Lambda
 resource "aws_iam_role_policy" "lambda_logging" {
   name = "lambda_logging"
-  role = aws_iam_role.iam_monitor_lambda_role.id
+  role = aws_iam_role.iam_lambda_cloudformation_hook.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -54,9 +53,9 @@ resource "aws_iam_role_policy" "lambda_logging" {
   })
 }
 // IAM policy for the Cloudformation function
-resource "aws_iam_role_policy" "iam_monitor_lambda_policy" {
-  name = "iam_monitor_lambda_policy"
-  role = aws_iam_role.iam_monitor_lambda_role.id
+resource "aws_iam_role_policy" "iam_lambda_cloudformation_hook_policy" {
+  name = "iam_lambda_cloudformation_hook_policy"
+  role = aws_iam_role.iam_lambda_cloudformation_hook.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -84,14 +83,14 @@ resource "aws_iam_role_policy" "iam_monitor_lambda_policy" {
 }
 
 // CloudWatch Log Group for Lambda
-resource "aws_cloudwatch_log_group" "lambda_logs" {
-  name              = "/aws/lambda/iam_monitor"
+resource "aws_cloudwatch_log_group" "lambda_cloudformation_hook" {
+  name              = "/aws/lambda/cloudformation_hook"
   retention_in_days = 7
 }
 
 // CloudWatch Event Rule
-resource "aws_cloudwatch_event_rule" "cloudformation_create_complete" {
-  name        = "capture-iam-events"
+resource "aws_cloudwatch_event_rule" "cloudformation_hook_create_complete" {
+  name        = "cloudformation_hook_create_complete"
   description = "Capture Create Complete Cloudformation events"
   event_pattern = jsonencode({
     source = ["aws.cloudformation"]
@@ -104,27 +103,27 @@ resource "aws_cloudwatch_event_rule" "cloudformation_create_complete" {
 }
 
 // CloudWatch Event Target
-resource "aws_cloudwatch_event_target" "cloudformation_create_complete_event_target" {
-  rule      = aws_cloudwatch_event_rule.cloudformation_create_complete.name
+resource "aws_cloudwatch_event_target" "cloudformation_hook_event_target" {
+  rule      = aws_cloudwatch_event_rule.cloudformation_hook_create_complete.name
   target_id = "ProcessResourceCreation"
-  arn       = aws_lambda_function.cloudformation_create_complete_handler.arn
+  arn       = aws_lambda_function.cloudformation_hook_handler.arn
 }
 
 // Lambda permission for EventBridge
-resource "aws_lambda_permission" "cloudformation_create_complete_allow_eventbridge" {
+resource "aws_lambda_permission" "cloudformation_hook_allow_eventbridge" {
   statement_id  = "AllowEventBridgeInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.cloudformation_create_complete_handler.function_name
+  function_name = aws_lambda_function.cloudformation_hook_handler.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.cloudformation_create_complete.arn
+  source_arn    = aws_cloudwatch_event_rule.cloudformation_hook_create_complete.arn
 }
 
 // Lambda function
-resource "aws_lambda_function" "cloudformation_create_complete_handler" {
+resource "aws_lambda_function" "cloudformation_hook_handler" {
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  function_name    = "cloudformation_create_complete_handler"
-  role             = aws_iam_role.iam_monitor_lambda_role.arn
+  function_name    = "cloudformation_hook_handler"
+  role             = aws_iam_role.iam_lambda_cloudformation_hook.arn
   handler          = "index.handler"
   runtime          = "nodejs18.x"
   timeout          = 60
@@ -136,8 +135,8 @@ resource "aws_lambda_function" "cloudformation_create_complete_handler" {
   }
 
   depends_on = [
-    aws_cloudwatch_log_group.lambda_logs,
+    aws_cloudwatch_log_group.lambda_cloudformation_hook,
     aws_iam_role_policy.lambda_logging,
-    null_resource.lambda_dependencies
+    null_resource.lambda_cloudformation_hook_dependencies
   ]
 }
