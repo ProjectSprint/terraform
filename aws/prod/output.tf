@@ -39,36 +39,6 @@ output "projectsprint_ec2" {
   description = "projectsprint_ec2 IP addresses grouped by team"
 }
 
-output "projectsprint_ecs_discovery" {
-  value = {
-    for team, config in var.projectsprint_teams :
-    team => {
-      for k, v in aws_service_discovery_service.team_discovery :
-      k => {
-        endpoint = "${k}-ecs-discovery"
-      } if startswith(k, team)
-    }
-  }
-  depends_on  = [module.team_ecr]
-  sensitive   = true
-  description = "projectsprint_ecr url info grouped by team"
-}
-
-output "projectsprint_ecr" {
-  value = {
-    for team, config in var.projectsprint_teams :
-    team => {
-      for k, v in module.team_ecr :
-      k => {
-        endpoint = v.repository_url
-      } if startswith(k, team)
-    }
-  }
-  depends_on  = [module.team_ecr]
-  sensitive   = true
-  description = "projectsprint_ecr url info grouped by team"
-}
-
 output "projectsprint_db" {
   value = {
     for team, config in var.projectsprint_teams :
@@ -85,6 +55,7 @@ output "projectsprint_db" {
   sensitive   = true
   description = "projectsprint_db connection info grouped by team"
 }
+
 output "projectsprint_user_credentials" {
   value = {
     for acc, team in var.projectsprint_teams :
@@ -97,26 +68,15 @@ output "projectsprint_user_credentials" {
   }
   sensitive = true
 }
+
 output "projectsprint_ec2_load_balancers" {
   value = {
     for acc, team in var.projectsprint_teams :
     acc => {
-      dns = aws_lb.projectsprint_ec2[acc].dns_name
+      dns = aws_lb.projectsprint_ec2_lb[acc].dns_name
     }
     if team.ec2_load_balancer
   }
   sensitive = true
 }
 
-output "projectsprint_ecs_load_balancers" {
-  value = {
-    for team, config in var.projectsprint_teams :
-    team => {
-      for k, v in aws_lb.team_alb :
-      k => {
-        endpoint = v.dns_name
-      } if startswith(k, team)
-    }
-  }
-  sensitive = true
-}

@@ -1,5 +1,5 @@
-resource "aws_iam_policy" "ecs_restrictions" {
-  name        = "projectsprint-ecs-restrictions"
+resource "aws_iam_policy" "copilot_policy" {
+  name        = "projectsprint-copilot-policy"
   description = "Enforces ECS resource limits and configuration standards for ProjectSprint developers"
 
   # https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
@@ -41,39 +41,6 @@ resource "aws_iam_policy" "ecs_restrictions" {
           }
         }
       },
-      #{
-      #  Sid    = "LimitMaximumAutoScaling"
-      #  Effect = "Deny"
-      #  Action = [
-      #    # https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
-      #    "application-autoscaling:RegisterScalableTarget"
-      #  ]
-      #  Resource = "*"
-      #  Condition = {
-      #    NumericGreaterThan = {
-      #      "application-autoscaling:MaxCapacity" = "6"
-      #    }
-      #  }
-      #},
-      #{
-      #  Sid    = "LimitECSTaskDefinitionResources"
-      #  Effect = "Deny"
-      #  Action = [
-      #    # https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RegisterTaskDefinition.html
-      #    "ecs:RegisterTaskDefinition"
-      #  ]
-      #  Resource = "*"
-      #  Condition = {
-      #    NumericGreaterThan = {
-      #      "ecs:cpu"    = "257"
-      #      "ecs:memory" = "513"
-      #    },
-      #    StringNotEquals = {
-      #      "ecs:runtimePlatform:cpuArchitecture"       = "ARM64"
-      #      "ecs:runtimePlatform:operatingSystemFamily" = "LINUX"
-      #    }
-      #  }
-      #},
       {
         Sid    = "PreventVpcAndSubnetCreation"
         Effect = "Deny"
@@ -87,14 +54,3 @@ resource "aws_iam_policy" "ecs_restrictions" {
   })
 }
 
-# Attach to developers group
-resource "aws_iam_group_policy_attachment" "projectsprint_ecs_restrictions" {
-  group      = aws_iam_group.projectsprint_developers.name
-  policy_arn = aws_iam_policy.ecs_restrictions.arn
-}
-
-# Attach to the CloudFormation execution role
-resource "aws_iam_role_policy_attachment" "cfn_ecs_restrictions" {
-  role       = "example-app-staging-CFNExecutionRole"
-  policy_arn = aws_iam_policy.ecs_restrictions.arn
-}
