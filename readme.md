@@ -21,4 +21,4 @@
 - If finished, create a pull request to this repo
 
 ### Collection of scripts:
-See [./scripts/script_collection.md]
+See [./scripts/script_collection.md](./scripts/script_collection.md)
