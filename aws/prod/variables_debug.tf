@@ -1,17 +1,3 @@
-variable "debug_services" {
-  default = ["user-service", "product-service", "purchase-service", "file-service"]
-}
-
-# Dev
-variable "debug_service_configs" {
-  default = {
-    "user-service"     = { container_port = 8081, cpu = 256, memory = 512, path_pattern = "/v1/user/*", instance_count = 0 }
-    "product-service"  = { container_port = 8082, cpu = 256, memory = 512, path_pattern = "/v1/product/*", instance_count = 0 }
-    "purchase-service" = { container_port = 8083, cpu = 256, memory = 512, path_pattern = "/v1/purchase/*", instance_count = 0 }
-    "file-service"     = { container_port = 8084, cpu = 256, memory = 512, path_pattern = "/v1/file/*", instance_count = 0 }
-  }
-}
-
 variable "debug_databases" {
   default = ["debug-user-service-db", "debug-product-service-db", "debug-purchase-service-db", "debug-file-service-db"]
 }

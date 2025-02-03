@@ -56,49 +56,6 @@ resource "aws_iam_policy" "projectspint_view" {
           "logs:Get*",
           "logs:Start*",
           "logs:Filter*",
-          # for copilot cli
-          # "ssm:Get*",
-          # "cloudformation:Describe*",
-          # "cloudformation:List*",
-          # "cloudformation:Get*",
-
-          # # arn:aws:ecr:ap-southeast-1:024848467457:repository/example-container*
-          # "ecr:*",
-
-          # # arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/example-service*
-          # "ssm:Delete*",
-          # "ssm:DeleteParameter",
-          # "ssm:PutParameter",
-          # "ssm:AddTagsToResource",
-
-          # # arn:aws:cloudformation:ap-southeast-1:024848467457:stack/example-service*
-          # # arn:aws:cloudformation:ap-southeast-1:024848467457:stackset/example-service*
-          # "cloudformation:ExecuteChangeSet",
-          # "cloudformation:CreateChangeSet",
-          # "cloudformation:CreateStack",
-          # "cloudformation:CreateStackInstances",
-          # "cloudformation:CreateChangeSet",
-          # "cloudformation:DeleteStack",
-          # "cloudformation:DeleteStackInstances",
-          # "cloudformation:DeleteStackSet",
-          # "cloudformation:UpdateStackSet",
-          # "cloudformation:TagResource",
-          # "cloudformation:CreateStackSet",
-
-          # # arn:aws:s3:::stackset-example-service*
-          # "s3:CreateBucket",
-          # "s3:PutBucketPolicy",
-          # "s3:DeleteObjectVersion",
-
-          # # arn:aws:iam::024848467457:role/example-service*
-          # "sts:Assume*",
-          # "iam:Create*",
-          # "iam:TagRole",
-          # "iam:DeleteRole",
-          # "iam:DeleteRolePolicy",
-          # "iam:PutRolePolicy",
-          # "iam:AttachRolePolicy",
-          # "iam:PassRole",
         ]
         Resource = "*"
       },

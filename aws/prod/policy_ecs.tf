@@ -1,5 +1,5 @@
-resource "aws_iam_policy" "debug_user_policy" {
-  name = "projectspint-debug-policy"
+resource "aws_iam_policy" "ecs_policy" {
+  name = "projectspint-ecs-policy"
   path = "/"
 
   policy = jsonencode({
@@ -9,7 +9,7 @@ resource "aws_iam_policy" "debug_user_policy" {
         Effect = "Allow"
         Action = [
           "sts:Assume*",
-          "iam:Create*",
+          "iam:CreateRole",
           "iam:TagRole",
           "iam:DeleteRole",
           "iam:DeleteRolePolicy",
@@ -34,6 +34,21 @@ resource "aws_iam_policy" "debug_user_policy" {
       {
         Effect = "Allow"
         Action = [
+          "kms:GenerateDataKey",
+        ]
+        Resource = "arn:aws:kms:ap-southeast-1:024848467457:key/*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:DeleteObjectVersion",
+          "s3:PutObject",
+        ]
+        Resource = "arn:aws:s3:::stackset-example-app*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "cloudformation:ExecuteChangeSet",
           "cloudformation:CreateChangeSet",
           "cloudformation:CreateStack",
@@ -44,11 +59,17 @@ resource "aws_iam_policy" "debug_user_policy" {
       {
         Effect = "Allow"
         Action = [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:GetParametersByPath",
           "ssm:DeleteParameter",
           "ssm:PutParameter",
-          "ssm:AddTagsToResource",
+          "ssm:AddTagsToResource"
         ]
-        Resource = "arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/example-app/*"
+        Resource = [
+          "arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/example-app",
+          "arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/example-app/*"
+        ]
       },
       {
         Effect = "Allow"
@@ -60,7 +81,6 @@ resource "aws_iam_policy" "debug_user_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ssm:Get*",
           "cloudformation:Describe*",
           "cloudformation:List*",
           "cloudformation:Get*",
@@ -70,8 +90,9 @@ resource "aws_iam_policy" "debug_user_policy" {
     ]
   })
 }
+
 # Policy attachments for view permissions
 resource "aws_iam_user_policy_attachment" "debug_user_policy" {
   user       = module.projectsprint_iam_account["example"].iam_user_name
-  policy_arn = aws_iam_policy.debug_user_policy.arn
+  policy_arn = aws_iam_policy.ecs_policy.arn
 }

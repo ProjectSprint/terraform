@@ -7,64 +7,18 @@ variable "projectsprint_teams" {
   type = map(object({
     ec2_instances     = optional(list(string), []) # t2.nano, t2.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
     ec2_load_balancer = optional(bool, false)
-    ecs_load_balancer = optional(list(object({ # this is the new variable
-      path       = string,
-      toEcsIndex = number,
-    })), null)
-    ecs_instances = optional(list(object({
-      vCpu                     = number,
-      memory                   = number,
-      autoscaleInstancesTo     = number,
-      cpuUtilizationTrigger    = number,
-      memoryUtilizationTrigger = number,
-      hasEcrImages             = bool,
-      useDbFromIndex           = optional(number, null),
-    })), [])
-    db_type          = optional(string, "")
-    db_disk          = optional(string, "")       # standard, gp2
-    db_instances     = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
-    allow_view       = optional(bool, false)
-    allow_create_ec2 = optional(bool, false)
-    allow_internet   = optional(bool, false)
+    db_type           = optional(string, "")
+    db_disk           = optional(string, "")       # standard, gp2
+    db_instances      = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
+    allow_view        = optional(bool, false)
+    allow_create_ec2  = optional(bool, false)
+    allow_internet    = optional(bool, false)
   }))
 
   default = {
     "nanda" = {
       allow_view    = true
       ec2_instances = []
-      ecs_load_balancer = [
-        {
-          path       = "/",
-          toEcsIndex = 0
-        },
-        {
-          path       = "/user",
-          toEcsIndex = 1
-        },
-      ]
-      ecs_instances = [
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = true
-          # useDbFromIndex           = 0 # example usage
-        },
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = true
-          # useDbFromIndex           = 0 # example usage
-        },
-      ]
-      # db_disk      = "standard",
-      # db_type      = "postgres",
-      # db_instances = ["t4g.micro"]
     }
     "example" = {
       allow_view = true
