@@ -67,6 +67,7 @@ variable "projectsprint_teams" {
       allow_view = true
       ec2_instances = [
         "t4g.small", # cache server
+        "t4g.small", # cache server
       ]
       db_disk      = "standard",
       db_type      = "postgres",
