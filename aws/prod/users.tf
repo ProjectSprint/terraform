@@ -7,12 +7,16 @@ variable "projectsprint_teams" {
   type = map(object({
     ec2_instances     = optional(list(string), []) # t2.nano, t2.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
     ec2_load_balancer = optional(bool, false)
-    db_type           = optional(string, "")
-    db_disk           = optional(string, "")       # standard, gp2
-    db_instances      = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
-    allow_view        = optional(bool, false)
-    allow_create_ec2  = optional(bool, false)
-    allow_internet    = optional(bool, false)
+    ecs_details = optional(object({
+      app_name      = optional(string, "")
+      service_names = optional(list(string), [])
+    }), null)
+    db_type          = optional(string, "")
+    db_disk          = optional(string, "")       # standard, gp2
+    db_instances     = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
+    allow_view       = optional(bool, false)
+    allow_create_ec2 = optional(bool, false)
+    allow_internet   = optional(bool, false)
   }))
 
   default = {
@@ -22,6 +26,10 @@ variable "projectsprint_teams" {
     }
     "example" = {
       allow_view = true
+      ecs_details = {
+        app_name      = "example-app"
+        service_names = ["example-1"]
+      }
     }
     # === Microservice teams === #
     "tries-di" = {
