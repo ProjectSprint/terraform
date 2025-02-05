@@ -95,6 +95,10 @@ variable "projectsprint_teams" {
     }
     "debug" = {
       allow_view = true
+      ec2_instances = [
+        "t4g.small", # cache server
+        "t4g.small"  # grafana server
+      ]
     }
     "malu-malu-tapi-suhu" = {
       allow_view = true
