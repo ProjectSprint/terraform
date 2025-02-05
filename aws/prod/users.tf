@@ -33,53 +33,13 @@ variable "projectsprint_teams" {
     }
     # === Microservice teams === #
     "tries-di" = {
-      allow_view = true
+      allow_view   = true
+      db_disk      = "standard",
+      db_type      = "postgres",
+      db_instances = ["t4g.micro"]
     }
     "ngikut" = {
-      allow_view = true
-      ecs_load_balancer = [
-        {
-          path       = "/",
-          toEcsIndex = 0
-        },
-        {
-          path       = "/",
-          toEcsIndex = 1
-        },
-        {
-          path       = "/",
-          toEcsIndex = 2
-        },
-      ]
-      ecs_instances = [
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = true
-          useDbFromIndex           = 0 # example usage
-        },
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = false
-          useDbFromIndex           = 0
-        },
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = false
-          useDbFromIndex           = 0
-        },
-      ]
+      allow_view   = true
       db_disk      = "standard",
       db_type      = "postgres",
       db_instances = ["t4g.micro"]
@@ -105,6 +65,12 @@ variable "projectsprint_teams" {
     }
     "mikroserpis-01" = {
       allow_view = true
+      ec2_instances = [
+        "t4g.small", # cache server
+      ]
+      db_disk      = "standard",
+      db_type      = "postgres",
+      db_instances = ["t4g.micro", "t4g.micro"]
     }
     "git-gud" = {
       allow_view = true
