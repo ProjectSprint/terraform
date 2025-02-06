@@ -55,6 +55,10 @@ variable "projectsprint_teams" {
     }
     "debug" = {
       allow_view = true
+      ecs_details = {
+        app_name      = "debug-app"
+        service_names = ["user-service", "file-service", "product-service", "purchase-service"]
+      }
       ec2_instances = [
         "t4g.small", # cache server
         "t4g.small"  # grafana server
