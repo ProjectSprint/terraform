@@ -1,5 +1,5 @@
 variable "malutapisuhu_databases" {
-  default = "malutapisuhu-db"
+  default = "malutapisuhu"
 }
 
 variable "malutapisuhu_database_configs" {
