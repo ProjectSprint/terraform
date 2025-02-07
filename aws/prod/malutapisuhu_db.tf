@@ -37,12 +37,12 @@ resource "aws_db_parameter_group" "malutapisuhu_db_parameter_group" {
 
   parameter {
     name  = "work_mem"
-    value = "8MB"
+    value = "8192" # 8MB in KB
   }
 
   parameter {
     name  = "maintenance_work_mem"
-    value = "128MB"
+    value = "131072" # 128MB in KB
   }
 
   tags = {
