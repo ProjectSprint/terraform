@@ -32,7 +32,7 @@ resource "aws_db_parameter_group" "malutapisuhu_db_parameter_group" {
 
   parameter {
     name  = "huge_pages"
-    value = "10475"
+    value = "on"
   }
 
   parameter {
