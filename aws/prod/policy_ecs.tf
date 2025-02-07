@@ -90,7 +90,7 @@ resource "aws_iam_policy" "ecs_app_policy" {
           "cloudformation:CreateStack",
           "cloudformation:DeleteStack",
         ]
-        Resource = "arn:aws:cloudformation:ap-southeast-1:024848467457:stack/${each.value}-infrastructure-roles/*"
+        Resource = "arn:aws:cloudformation:ap-southeast-1:024848467457:stack/${each.value}*"
       },
       {
         Effect = "Allow"
