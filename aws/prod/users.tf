@@ -66,6 +66,14 @@ variable "projectsprint_teams" {
     }
     "malu-malu-tapi-suhu" = {
       allow_view = true
+      ecs_details = {
+        app_name      = "malutapisuhu-app"
+        service_names = ["upp-service"]
+      }
+      ec2_instances = [
+        "t4g.small", # cache server
+        "t4g.small"  # grafana server
+      ]
     }
     "mikroserpis-01" = {
       allow_view = true
