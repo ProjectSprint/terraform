@@ -64,6 +64,8 @@ resource "aws_iam_policy" "ecs_app_policy" {
           "cloudformation:UpdateStackSet",
           "cloudformation:TagResource",
           "cloudformation:CreateStackSet",
+          "cloudformation:GetTemplateSummary",
+          "cloudformation:ListStackInstances",
         ]
         Resource = "arn:aws:cloudformation:ap-southeast-1:024848467457:stackset/${each.value}-infrastructure*"
       },
@@ -71,6 +73,7 @@ resource "aws_iam_policy" "ecs_app_policy" {
         Effect = "Allow"
         Action = [
           "kms:GenerateDataKey",
+          "kms:Decrypt",
         ]
         Resource = "arn:aws:kms:ap-southeast-1:024848467457:key/*"
       },
@@ -89,8 +92,19 @@ resource "aws_iam_policy" "ecs_app_policy" {
           "cloudformation:CreateChangeSet",
           "cloudformation:CreateStack",
           "cloudformation:DeleteStack",
+          "cloudformation:GetTemplateSummary",
+          "cloudformation:GetTemplate",
         ]
         Resource = "arn:aws:cloudformation:ap-southeast-1:024848467457:stack/${each.value}*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParametersByPath",
+        ]
+        Resource = [
+          "arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/"
+        ]
       },
       {
         Effect = "Allow"
@@ -106,15 +120,6 @@ resource "aws_iam_policy" "ecs_app_policy" {
           "arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/${each.value}",
           "arn:aws:ssm:ap-southeast-1:024848467457:parameter/copilot/applications/${each.value}/*"
         ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "cloudformation:Describe*",
-          "cloudformation:List*",
-          "cloudformation:Get*",
-        ]
-        Resource = "*"
       },
     ]
   })
