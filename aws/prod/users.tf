@@ -37,6 +37,10 @@ variable "projectsprint_teams" {
       db_disk      = "standard",
       db_type      = "postgres",
       db_instances = ["t4g.micro"]
+      ecs_details = {
+        app_name      = "tries-coba"
+        service_names = ["tries-coba-service-1"]
+      }
     }
     "ngikut" = {
       allow_view   = true
