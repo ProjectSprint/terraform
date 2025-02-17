@@ -7,12 +7,16 @@ variable "projectsprint_teams" {
   type = map(object({
     ec2_instances     = optional(list(string), []) # t2.nano, t2.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
     ec2_load_balancer = optional(bool, false)
-    db_type           = optional(string, "")
-    db_disk           = optional(string, "")       # standard, gp2
-    db_instances      = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
-    allow_view        = optional(bool, false)
-    allow_create_ec2  = optional(bool, false)
-    allow_internet    = optional(bool, false)
+    ecs_details = optional(object({
+      app_name      = optional(string, "")
+      service_names = optional(list(string), [])
+    }), null)
+    db_type          = optional(string, "")
+    db_disk          = optional(string, "")       # standard, gp2
+    db_instances     = optional(list(string), []) # t4g.micro, t4g.small, t4g.medium, t4g.large, t4g.xlarge
+    allow_view       = optional(bool, false)
+    allow_create_ec2 = optional(bool, false)
+    allow_internet   = optional(bool, false)
   }))
 
   default = {
@@ -22,56 +26,24 @@ variable "projectsprint_teams" {
     }
     "example" = {
       allow_view = true
+      ecs_details = {
+        app_name      = "example-app"
+        service_names = ["example-1"]
+      }
     }
     # === Microservice teams === #
     "tries-di" = {
-      allow_view = true
+      allow_view   = true
+      db_disk      = "standard",
+      db_type      = "postgres",
+      db_instances = ["t4g.micro"]
+      ecs_details = {
+        app_name      = "tries-coba"
+        service_names = ["tries-coba-service-1"]
+      }
     }
     "ngikut" = {
-      allow_view = true
-      ecs_load_balancer = [
-        {
-          path       = "/",
-          toEcsIndex = 0
-        },
-        {
-          path       = "/",
-          toEcsIndex = 1
-        },
-        {
-          path       = "/",
-          toEcsIndex = 2
-        },
-      ]
-      ecs_instances = [
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = true
-          useDbFromIndex           = 0 # example usage
-        },
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = false
-          useDbFromIndex           = 0
-        },
-        {
-          vCpu                     = 256
-          memory                   = 512
-          autoscaleInstancesTo     = 1
-          cpuUtilizationTrigger    = 80
-          memoryUtilizationTrigger = 80
-          hasEcrImages             = false
-          useDbFromIndex           = 0
-        },
-      ]
+      allow_view   = true
       db_disk      = "standard",
       db_type      = "postgres",
       db_instances = ["t4g.micro"]
@@ -87,12 +59,35 @@ variable "projectsprint_teams" {
     }
     "debug" = {
       allow_view = true
+      ecs_details = {
+        app_name      = "debug-app"
+        service_names = ["user-service", "file-service", "product-service", "purchase-service"]
+      }
+      ec2_instances = [
+        "t4g.small", # cache server
+        "t4g.small"  # grafana server
+      ]
     }
     "malu-malu-tapi-suhu" = {
       allow_view = true
+      ecs_details = {
+        app_name      = "malutapisuhu-app"
+        service_names = ["upp-service"]
+      }
+      ec2_instances = [
+        "t4g.small", # cache server
+        "t4g.small"  # grafana server
+      ]
     }
     "mikroserpis-01" = {
       allow_view = true
+      ec2_instances = [
+        "t4g.small", # cache server
+        "t4g.small", # cache server
+      ]
+      db_disk      = "standard",
+      db_type      = "postgres",
+      db_instances = ["t4g.micro", "t4g.micro"]
     }
     "git-gud" = {
       allow_view = true
