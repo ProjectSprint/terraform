@@ -25,6 +25,7 @@ resource "aws_db_parameter_group" "mikroserpis_01_db_pg" {
   family      = "postgres17"
   description = "Custom parameter group for logical replication"
 
+  # Enable logical replication
   parameter {
     name  = "rds.logical_replication"
     value = "1"
@@ -33,6 +34,59 @@ resource "aws_db_parameter_group" "mikroserpis_01_db_pg" {
   parameter {
     name  = "wal_level"
     value = "logical"
+  }
+
+  # Performance tuning parameters
+  parameter {
+    name  = "huge_pages"
+    value = "on"
+  }
+
+  parameter {
+    name  = "work_mem"
+    value = "16384" # 16MB in KB
+  }
+
+  parameter {
+    name  = "maintenance_work_mem"
+    value = "131072" # 128MB in KB
+  }
+
+  # parameter {
+  #   name  = "effective_cache_size"
+  #   value = "4096" # Example for 4GB, adjust based on instance memory
+  # }
+
+  # parameter {
+  #   name  = "shared_buffers"
+  #   value = "2048" # Example for 2GB, adjust based on instance memory
+  # }
+
+  # parameter {
+  #   name  = "autovacuum_vacuum_cost_limit"
+  #   value = "2000" # Increase to allow more work per autovacuum cycle
+  # }
+
+  parameter {
+    name  = "wal_buffers"
+    value = "65536" # Increase for write-heavy workloads (64MB)
+  }
+
+  parameter {
+    name  = "checkpoint_completion_target"
+    value = "0.9" # Helps distribute checkpoint I/O more evenly
+  }
+
+  # Monitoring and other settings
+  parameter {
+    name  = "log_statement"
+    value = "none"
+  }
+
+  tags = {
+    project     = "projectsprint"
+    environment = "development" # or production
+    team_name   = "mikroserpis-01"
   }
 }
 
