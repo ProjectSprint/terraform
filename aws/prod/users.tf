@@ -87,7 +87,7 @@ variable "projectsprint_teams" {
       ]
       db_disk      = "standard",
       db_type      = "postgres",
-      db_instances = ["t4g.micro", "t4g.micro"]
+      db_instances = []
     }
     "git-gud" = {
       allow_view = true
