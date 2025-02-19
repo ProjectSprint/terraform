@@ -26,15 +26,15 @@ resource "aws_db_parameter_group" "mikroserpis_01_db_pg" {
   description = "Custom parameter group for logical replication"
 
   # Enable logical replication
-  parameter {
-    name  = "rds.logical_replication"
-    value = "1"
-  }
+  # parameter {
+  #   name         = "rds.logical_replication"
+  #   value        = "1"
+  # }
 
-  parameter {
-    name  = "wal_level"
-    value = "logical"
-  }
+  # parameter {
+  #   name         = "wal_level"
+  #   value        = "logical"
+  # }
 
   # Performance tuning parameters
   parameter {
@@ -68,8 +68,9 @@ resource "aws_db_parameter_group" "mikroserpis_01_db_pg" {
   # }
 
   parameter {
-    name  = "wal_buffers"
-    value = "65536" # Increase for write-heavy workloads (64MB)
+    name         = "wal_buffers"
+    value        = "65536" # Increase for write-heavy workloads (64MB)
+    apply_method = "pending-reboot"
   }
 
   parameter {
@@ -91,17 +92,18 @@ resource "aws_db_parameter_group" "mikroserpis_01_db_pg" {
 }
 
 resource "aws_db_instance" "mikroserpis_01_db" {
-  allocated_storage    = 5
-  engine               = "postgres"
-  engine_version       = "17.2"
-  instance_class       = "db.t4g.micro"
-  identifier           = "mikroserpis-01-db-01"
-  db_name              = "mikroserpis-01-db-01"
-  storage_type         = "standard"
-  username             = "postgres"
-  password             = random_string.mikroserpis_01_db_pass.result
-  parameter_group_name = aws_db_parameter_group.mikroserpis_01_db_pg.name
-  skip_final_snapshot  = true
+  allocated_storage       = 5
+  engine                  = "postgres"
+  engine_version          = "17.2"
+  instance_class          = "db.t4g.micro"
+  identifier              = "mikroserpis-01-db-01"
+  db_name                 = "mikroserpis01db01"
+  storage_type            = "standard"
+  username                = "postgres"
+  password                = random_string.mikroserpis_01_db_pass.result
+  parameter_group_name    = aws_db_parameter_group.mikroserpis_01_db_pg.name
+  skip_final_snapshot     = true
+  backup_retention_period = 35
 
   storage_encrypted   = false
   deletion_protection = false
@@ -121,12 +123,20 @@ resource "aws_db_instance" "mikroserpis_01_db" {
   }
 }
 
+# │ Error: creating RDS DB Instance (read replica) (mikroserpis-01-db-01-replica): operation error RDS: CreateDBInstanceReadReplica, https response error StatusCode: 400, RequestID: 24dbbc75-9a58-4799-9168-ddcf0fda54
+# e3, InvalidDBInstanceState: Automated backups are not enabled for this database instance. To enable automated backups, use ModifyDBInstance to set the backup retention period to a non-zero value.
+# │
+# │   with aws_db_instance.mikroserpis_01_db_replica,
+# │   on db_mikroserpis_01.tf line 126, in resource "aws_db_instance" "mikroserpis_01_db_replica":
+# │  126: resource "aws_db_instance" "mikroserpis_01_db_replica" {
+
 resource "aws_db_instance" "mikroserpis_01_db_replica" {
-  identifier          = "mikroserpis-01-db-01-replica"
-  instance_class      = "db.t4g.micro"
-  replicate_source_db = aws_db_instance.mikroserpis_01_db.arn
-  storage_type        = "standard"
-  skip_final_snapshot = true
+  identifier              = "mikroserpis-01-db-01-replica"
+  instance_class          = "db.t4g.micro"
+  replicate_source_db     = aws_db_instance.mikroserpis_01_db.arn
+  storage_type            = "standard"
+  skip_final_snapshot     = true
+  backup_retention_period = 35
 
   vpc_security_group_ids = [aws_security_group.projectsprint_db.id]
   db_subnet_group_name   = aws_db_subnet_group.mikroserpis_01_db.name
@@ -137,11 +147,16 @@ resource "aws_db_instance" "mikroserpis_01_db_replica" {
   monitoring_role_arn                   = aws_iam_role.rds_enhanced_monitoring.arn
 
   tags = {
-    project     = "projectsprint"
+    project     = "projectsprintarn"
     environment = "development"
     team_name   = "mikroserpis-01"
     role        = "replica"
   }
+}
+
+resource "aws_db_instance_automated_backups_replication" "mikroserpis_01_db_replica" {
+  source_db_instance_arn = aws_db_instance.mikroserpis_01_db_replica.arn
+  retention_period       = 35
 }
 
 resource "aws_db_subnet_group" "mikroserpis_01_db" {
