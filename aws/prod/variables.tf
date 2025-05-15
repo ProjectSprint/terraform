@@ -1,17 +1,10 @@
 locals {
-  region          = "ap-southeast-1"
-  project         = "sprint"
-  s3_backend_name = "projectsprint-tf-state"
+  region          = "us-west-2"
+  az              = ["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]
+  s3_backend_name = "projectsprint-tf-state-a10"
+  project         = "projectsprint"
 }
 
-variable "PROJECTSPRINT_VM_PUBLIC_KEY" {
-  type    = string
-  default = ""
+variable "projectsprint_vm_operational_key" {
+  type = string
 }
-
-variable "region" {
-  type        = string
-  default     = "ap-southeast-1"
-  description = "default region"
-}
-
