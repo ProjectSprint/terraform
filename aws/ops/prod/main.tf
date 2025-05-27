@@ -1,10 +1,10 @@
 terraform {
   # Comment the backend if the bucket and dynamodb isn't provisioned yet
   backend "s3" {
-    bucket       = "projectsprint-tf-state-a10"
+    bucket       = "projectsprint-ops-tf-state-42g"
     use_lockfile = true
     key          = "tf-state/terraform.tfstate"
-    region       = "us-west-2"
+    region       = "ap-southeast-1"
     encrypt      = true
   }
 
@@ -18,5 +18,5 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-west-2"
+  region = "ap-southeast-1"
 }

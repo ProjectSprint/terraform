@@ -1,3 +1,7 @@
+locals {
+  s3_backend_name = "projectsprint-tf-state-b10"
+}
+
 module "s3-tf-state" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.15.1"
