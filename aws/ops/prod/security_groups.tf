@@ -28,6 +28,10 @@ resource "aws_security_group" "vm" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    project = local.project
+  }
 }
 
 resource "aws_security_group" "all" {
@@ -47,6 +51,10 @@ resource "aws_security_group" "all" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    project = local.project
   }
 }
 
@@ -79,5 +87,9 @@ resource "aws_security_group" "db" {
 
   lifecycle {
     create_before_destroy = true
+  }
+
+  tags = {
+    project = local.project
   }
 }

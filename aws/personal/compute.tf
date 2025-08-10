@@ -1,4 +1,4 @@
-resource "aws_instance" "main_vm" {
+resource "aws_instance" "nanda_personal_vm" {
   # check ubuntu image ami code:
   # https://cloud-images.ubuntu.com/locator/ec2/
   ami = "ami-066c8e715dd8c01d8"
@@ -11,7 +11,7 @@ resource "aws_instance" "main_vm" {
     aws_security_group.vm.id
   ]
 
-  key_name = aws_key_pair.main_vm.key_name
+  key_name = aws_key_pair.nanda_personal_vm.key_name
 
   tags = {
     name    = "${local.project}-vm"
