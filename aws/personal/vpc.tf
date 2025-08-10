@@ -1,4 +1,3 @@
-# default vpc & subnets
 resource "aws_default_vpc" "default" {}
 resource "aws_default_subnet" "public_az1" {
   availability_zone = local.az[0]

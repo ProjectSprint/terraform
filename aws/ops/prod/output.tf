@@ -5,3 +5,4 @@ output "main_vm" {
   }
   sensitive = true
 }
+
