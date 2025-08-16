@@ -15,3 +15,12 @@ resource "google_storage_bucket" "backend" {
     }
   }
 }
+
+resource "google_storage_bucket" "transcription" {
+  name     = "projectsprint-transcription"
+  location = local.region
+
+  versioning {
+    enabled = true
+  }
+}

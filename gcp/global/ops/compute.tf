@@ -18,7 +18,7 @@ resource "google_compute_instance" "ops" {
       // gcloud compute images list | grep "ubuntu.*amd64"
       image = "ubuntu-os-cloud/ubuntu-2504-plucky-amd64-v20250606"
       type  = "pd-standard"
-      size  = 10
+      size  = 50
     }
   }
 
