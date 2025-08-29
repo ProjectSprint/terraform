@@ -43,6 +43,21 @@ resource "google_compute_firewall" "allow_ssh" {
   depends_on    = [google_project_service.compute]
 }
 
+# Firewall rule for mongodb (port 51820)
+resource "google_compute_firewall" "allow_mongodb_tcp" {
+  name    = "allow-mongodb-tcp"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["27017"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["mongodb-server"]
+  depends_on    = [google_project_service.compute]
+}
+
 # Firewall rule for Wireguard (port 51820)
 resource "google_compute_firewall" "allow_wireguard_tcp" {
   name    = "allow-wireguard-tcp"

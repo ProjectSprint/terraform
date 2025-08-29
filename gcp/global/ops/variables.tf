@@ -1,4 +1,4 @@
-variable "google_project_id" {
+variable "project_id" {
   type = string
 }
 variable "projectsprint_ops_vm_key" {
