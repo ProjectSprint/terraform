@@ -4,6 +4,12 @@ output "ops_instance_details" {
   sensitive   = true
 }
 
+output "jumphost_instance_details" {
+  description = "External IP address of the instance (using try function)"
+  value       = try(google_compute_instance.jumphost_instance.network_interface[0].access_config[0].nat_ip, "No external IP assigned")
+  sensitive   = true
+}
+
 output "free_tier_instance_details" {
   description = "External IP address of the instance (using try function)"
   value       = try(google_compute_instance.free_tier_instance.network_interface[0].access_config[0].nat_ip, "No external IP assigned")
@@ -33,4 +39,42 @@ output "bucket_s3_details" {
     force_path_style = true
   }
   sensitive = true
+}
+
+output "ps_sa_service_account_service_account" {
+  description = "Email address projectsprint service account"
+  value       = google_service_account.ps_sa_service_account.email
+}
+
+output "ps_sa_service_account_service_account_key" {
+  description = "The private key of the projectsprint service account (base64 encoded)"
+  value       = google_service_account_key.ps_sa_service_account.private_key
+  sensitive   = true
+}
+
+output "ps_registry_url" {
+  description = "The ProjectSprint Container Registry URL"
+  value       = "gcr.io/${var.project_id}"
+}
+
+output "ps_registry_commands" {
+  description = "Example Docker commands for using the registry"
+  value = {
+    configure_auth = "gcloud auth configure-docker"
+    tag_image      = "docker tag my-app gcr.io/${var.project_id}/my-app:latest"
+    push_image     = "docker push gcr.io/${var.project_id}/my-app:latest"
+    pull_image     = "docker pull gcr.io/${var.project_id}/my-app:latest"
+  }
+}
+output "artifact_registry_url" {
+  description = "The Artifact Registry URL (if created)"
+  value       = "${local.free_tier_region}-docker.pkg.dev/${var.project_id}/public-docker-repo"
+}
+
+output "public_access_info" {
+  description = "Information about public access"
+  value = {
+    public_pull_command = "docker pull gcr.io/${var.project_id}/ops:COMMIT_HASH"
+    note                = "Images are publicly accessible - no authentication required for pulling"
+  }
 }

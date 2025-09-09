@@ -86,3 +86,59 @@ resource "google_compute_firewall" "allow_wireguard_udp" {
   target_tags   = ["wireguard-server"]
   depends_on    = [google_project_service.compute]
 }
+
+resource "google_compute_firewall" "open_vpn_udp" {
+  name    = "open-vpn-udp"
+  network = "default"
+
+  allow {
+    protocol = "udp"
+    ports    = ["1194"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["open-vpn-server"]
+  depends_on    = [google_project_service.compute]
+}
+
+resource "google_compute_firewall" "open_vpn_tcp" {
+  name    = "open-vpn-tcp"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["1194"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["open-vpn-server"]
+  depends_on    = [google_project_service.compute]
+}
+
+
+resource "google_compute_firewall" "onprem_pc" {
+  name    = "onprem-pc"
+  network = "default"
+
+  # on prem servers
+  allow {
+    protocol = "tcp"
+    ports = [
+      "9022",
+      "8022",
+      "7022",
+      "10022",
+      "11022",
+    ]
+  }
+
+  # testing ports
+  allow {
+    protocol = "tcp"
+    ports    = ["8080", "8081"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["onprem-pc"]
+  depends_on    = [google_project_service.compute]
+}

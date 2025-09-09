@@ -28,3 +28,15 @@ resource "google_storage_hmac_key" "projectsprint_bucket_s3_key" {
   project               = var.project_id
 }
 
+resource "google_service_account" "ps_sa_service_account" {
+  account_id   = "projectsprint-service-account"
+  display_name = "Container Registry Service Account"
+  description  = "Service account for Container Registry operations"
+  project      = var.project_id
+}
+
+resource "google_service_account_key" "ps_sa_service_account" {
+  service_account_id = google_service_account.ps_sa_service_account.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
+}
+
