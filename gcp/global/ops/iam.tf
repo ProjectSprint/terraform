@@ -1,5 +1,5 @@
 resource "google_project_iam_member" "ps_sa_service_account_admin" {
-  project = var.project_id
+  project = local.project_id
   role    = "roles/storage.admin"
   member  = "serviceAccount:${google_service_account.ps_sa_service_account.email}"
 }
@@ -18,7 +18,7 @@ resource "google_artifact_registry_repository" "ps_docker_repo" {
 }
 
 resource "google_artifact_registry_repository_iam_member" "public_read" {
-  project    = var.project_id
+  project    = local.project_id
   location   = google_artifact_registry_repository.ps_docker_repo.location
   repository = google_artifact_registry_repository.ps_docker_repo.name
   role       = "roles/artifactregistry.reader"
@@ -26,7 +26,7 @@ resource "google_artifact_registry_repository_iam_member" "public_read" {
 }
 
 resource "google_artifact_registry_repository_iam_member" "ps_write" {
-  project    = var.project_id
+  project    = local.project_id
   location   = google_artifact_registry_repository.ps_docker_repo.location
   repository = google_artifact_registry_repository.ps_docker_repo.name
   role       = "roles/artifactregistry.writer"

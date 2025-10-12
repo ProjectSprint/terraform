@@ -14,7 +14,7 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
+  project = local.project_id
   # pricing comparison (e2-micro, spot) 9 Jun 2025
   # Jakarta (asia-southeast2): $2.58
   # Delhi (asia-south2): $2.22

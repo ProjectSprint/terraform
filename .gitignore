@@ -44,3 +44,4 @@ terraform.rc
 # ignore credential file
 *.credential.json
 
+.context

@@ -54,27 +54,18 @@ output "ps_sa_service_account_service_account_key" {
 
 output "ps_registry_url" {
   description = "The ProjectSprint Container Registry URL"
-  value       = "gcr.io/${var.project_id}"
+  value       = "gcr.io/${local.project_id}"
 }
 
-output "ps_registry_commands" {
-  description = "Example Docker commands for using the registry"
-  value = {
-    configure_auth = "gcloud auth configure-docker"
-    tag_image      = "docker tag my-app gcr.io/${var.project_id}/my-app:latest"
-    push_image     = "docker push gcr.io/${var.project_id}/my-app:latest"
-    pull_image     = "docker pull gcr.io/${var.project_id}/my-app:latest"
-  }
-}
 output "artifact_registry_url" {
   description = "The Artifact Registry URL (if created)"
-  value       = "${local.free_tier_region}-docker.pkg.dev/${var.project_id}/public-docker-repo"
+  value       = "${local.free_tier_region}-docker.pkg.dev/${local.project_id}/public-docker-repo"
 }
 
 output "public_access_info" {
   description = "Information about public access"
   value = {
-    public_pull_command = "docker pull gcr.io/${var.project_id}/ops:COMMIT_HASH"
+    public_pull_command = "docker pull gcr.io/${local.project_id}/ops:COMMIT_HASH"
     note                = "Images are publicly accessible - no authentication required for pulling"
   }
 }

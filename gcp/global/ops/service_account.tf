@@ -25,14 +25,14 @@ resource "google_storage_bucket_iam_member" "bucket_admin" {
 
 resource "google_storage_hmac_key" "projectsprint_bucket_s3_key" {
   service_account_email = google_service_account.projectsprint_bucket.email
-  project               = var.project_id
+  project               = local.project_id
 }
 
 resource "google_service_account" "ps_sa_service_account" {
   account_id   = "projectsprint-service-account"
   display_name = "Container Registry Service Account"
   description  = "Service account for Container Registry operations"
-  project      = var.project_id
+  project      = local.project_id
 }
 
 resource "google_service_account_key" "ps_sa_service_account" {
