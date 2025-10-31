@@ -29,10 +29,10 @@ resource "helm_release" "cert_manager" {
 
   create_namespace = true
 
-  set {
+  set = [{
     name  = "crds.enabled"
     value = true
-  }
+  }]
 }
 
 resource "helm_release" "tempo" {
