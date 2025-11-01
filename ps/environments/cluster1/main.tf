@@ -1,4 +1,10 @@
 terraform {
+  # backend "kubernetes" {
+  #   secret_suffix     = "state"
+  #   namespace         = "tf-state"
+  #   in_cluster_config = true
+  #   config_path       = "admin.kubeconfig"
+  # }
   required_providers {
     kubernetes = {
       source  = "hashicorp/kubernetes"

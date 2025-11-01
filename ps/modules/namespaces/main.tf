@@ -16,3 +16,9 @@ resource "kubernetes_namespace" "capsule_system" {
     name = "capsule-system"
   }
 }
+
+resource "kubernetes_namespace" "tf_state" {
+  metadata {
+    name = "tf-state"
+  }
+}
