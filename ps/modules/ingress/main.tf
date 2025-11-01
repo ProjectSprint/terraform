@@ -1,10 +1,10 @@
-resource "kubernetes_manifest" "monitoring_ingress" {
+resource "kubernetes_manifest" "ingress" {
   manifest = {
     apiVersion = "networking.k8s.io/v1"
     kind       = "Ingress"
     metadata = {
-      name      = "monitoring-ingress"
-      namespace = var.namespace
+      name      = "${var.service_namespace}-${var.service_name}"
+      namespace = var.service_namespace
       annotations = {
         "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
         "traefik.ingress.kubernetes.io/router.tls"         = "true"
@@ -13,13 +13,13 @@ resource "kubernetes_manifest" "monitoring_ingress" {
     spec = {
       tls = [
         {
-          hosts      = [var.grafana_domain]
-          secretName = var.tls_secret_name
+          hosts      = [var.domain]
+          secretName = var.service_tls_secret_name
         }
       ]
       rules = [
         {
-          host = var.grafana_domain
+          host = var.domain
           http = {
             paths = [
               {
@@ -27,8 +27,8 @@ resource "kubernetes_manifest" "monitoring_ingress" {
                 pathType = "Prefix"
                 backend = {
                   service = {
-                    name = "kube-prometheus-stack-grafana"
-                    port = { number = 80 }
+                    name = var.service_name
+                    port = { number = var.service_port }
                   }
                 }
               }

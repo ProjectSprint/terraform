@@ -9,3 +9,7 @@ output "tempo_url" {
 output "prometheus_url" {
   value = "kube-prometheus-stack-prometheus.${var.namespace}.svc.cluster.local:9090"
 }
+
+output "grafana_svc_name" {
+  value = "kube-prometheus-stack-grafana"
+}
