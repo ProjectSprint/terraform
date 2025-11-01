@@ -1,6 +1,7 @@
 .envrc
 *.zip
 node_modules
+*.kubeconfig
 
 # Local .terraform directories
 **/.terraform/*
