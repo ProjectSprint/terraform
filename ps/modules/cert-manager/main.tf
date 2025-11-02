@@ -7,13 +7,15 @@ resource "helm_release" "cert_manager" {
   wait             = false
   timeout          = 900
 
-  set = [
-    {
-      name  = "crds.enabled"
-      value = true
-    }
+  values = [
+    yamlencode({
+      crds = {
+        enabled = true
+      }
+    })
   ]
 }
+
 
 resource "kubernetes_manifest" "letsencrypt_prod" {
   manifest = {

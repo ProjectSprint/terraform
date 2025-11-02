@@ -9,7 +9,7 @@ variable "domain_sans" {
   description = "List of domains that needs to be included at capsule domain"
 }
 
-variable "user_groups" {
-  type        = list(string)
-  description = "grafana namespace name for monitoring"
+variable "nodeport" {
+  type        = number
+  description = "The port to serve"
 }

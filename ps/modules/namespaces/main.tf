@@ -16,6 +16,12 @@ resource "kubernetes_namespace" "capsule_system" {
   }
 }
 
+resource "kubernetes_namespace" "tenant_system" {
+  metadata {
+    name = "tenant-system"
+  }
+}
+
 resource "kubernetes_namespace" "tf_state" {
   metadata {
     name = "tf-state"

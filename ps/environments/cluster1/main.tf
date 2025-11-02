@@ -75,3 +75,42 @@ module "grafana_ingress" {
   service_name            = module.monitoring.grafana_svc_name
   service_port            = 80
 }
+
+module "capsule" {
+  source      = "../../modules/capsule"
+  namespace   = module.namespaces.capsule_system_name
+  user_groups = [local.tenant_user_group]
+  domain_sans = ["cluster1.projectsprint.id"]
+}
+#
+# module "capsule_proxy" {
+#   source      = "../../modules/capsule-proxy/"
+#   namespace   = module.namespaces.capsule_system_name
+#   domain_sans = ["cluster1.projectsprint.id"]
+#   nodeport    = 30443
+# }
+#
+module "capsule_tenants" {
+  source            = "../../modules/capsule-tenant"
+  tenant_user_group = local.tenant_user_group
+  namespace         = module.namespaces.tenant_system_name
+
+  teams = [
+    {
+      name = "team-a"
+      resourceQuotas = {
+        cpu    = "2"
+        memory = "2Gi"
+      }
+      namespaceQuota = 2
+    },
+    {
+      name = "team-b"
+      resourceQuotas = {
+        cpu    = "4"
+        memory = "8Gi"
+      }
+      namespaceQuota = 2
+    }
+  ]
+}
