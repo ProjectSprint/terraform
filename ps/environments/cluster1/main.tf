@@ -82,14 +82,7 @@ module "capsule" {
   user_groups = [local.tenant_user_group]
   domain_sans = ["cluster1.projectsprint.id"]
 }
-#
-# module "capsule_proxy" {
-#   source      = "../../modules/capsule-proxy/"
-#   namespace   = module.namespaces.capsule_system_name
-#   domain_sans = ["cluster1.projectsprint.id"]
-#   nodeport    = 30443
-# }
-#
+
 module "capsule_tenants" {
   source            = "../../modules/capsule-tenant"
   tenant_user_group = local.tenant_user_group
