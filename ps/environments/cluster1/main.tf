@@ -108,3 +108,66 @@ module "capsule_tenants" {
     }
   ]
 }
+
+
+module "eso" {
+  source = "../../modules/vault"
+
+  namespace               = module.namespaces.secret_system_name
+  vault_kv_path           = "secret/"
+  vault_token             = "asdf"
+  vault_token_secret_name = "vault-token"
+  vault_token_secret_key  = "token"
+}
+/**
+ apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: app-db-secret
+  namespace: app
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend          # 👈 link to SecretStore
+    kind: SecretStore
+  target:
+    name: db-secret              # 👈 name of the K8s Secret to create
+  data:
+    - secretKey: username        # 👈 key inside K8s Secret
+      remoteRef:
+        key: secret/data/app/db  # 👈 path in Vault
+        property: username       # 👈 property inside Vault secret
+    - secretKey: password
+      remoteRef:
+        key: secret/data/app/db
+        property: password
+ */
+
+/**
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: app
+          image: myrepo/myservice:latest
+          envFrom:
+            - secretRef:
+                name: db-secret   # <- This comes from ESO
+ */
+
+/**
+envFromSecrets:
+  - name: db-secret
+{{- if .Values.envFromSecrets }}
+envFrom:
+  {{- range .Values.envFromSecrets }}
+  - secretRef:
+      name: {{ .name }}
+  {{- end }}
+{{- end }}
+ */

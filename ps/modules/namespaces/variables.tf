@@ -10,3 +10,6 @@ output "capsule_system_name" {
 output "tenant_system_name" {
   value = kubernetes_namespace.tenant_system.metadata[0].name
 }
+output "secret_system_name" {
+  value = kubernetes_namespace.secret_system.metadata[0].name
+}
