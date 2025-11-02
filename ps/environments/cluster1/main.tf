@@ -42,6 +42,7 @@ module "grafana_tls" {
   issuer_name = module.cert_manager.issuer_name
 }
 
+# kubectl get secret kube-prometheus-stack-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode
 module "monitoring" {
   source         = "../../modules/monitoring"
   namespace      = module.namespaces.monitoring_name
@@ -57,7 +58,7 @@ module "traefik" {
       - "--metrics.prometheus.addServicesLabels=true"
       - "--tracing=true"
       - "--tracing.otlp.grpc=true"
-      - "--tracing.otlp.grpc.endpoint=${module.monitoring.tempo_url}"
+      - "--tracing.otlp.grpc.endpoint=${module.monitoring.tempo_input_url}"
       - "--tracing.otlp.grpc.insecure=true"
       - "--tracing.serviceName=traefik"
       - "--tracing.sampleRate=1.0"

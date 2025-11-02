@@ -22,6 +22,19 @@ resource "helm_release" "kube_prometheus_stack" {
           size             = "10Gi"
           storageClassName = "local-path"
         }
+        additionalDataSources = [
+          {
+            name      = "Tempo"
+            type      = "tempo"
+            uid       = "tempo"
+            access    = "proxy"
+            url       = "http://tempo.${var.namespace}.svc.cluster.local:3200"
+            isDefault = false
+            jsonData = {
+              httpMethod = "GET"
+            }
+          }
+        ]
       }
 
       prometheus = {
