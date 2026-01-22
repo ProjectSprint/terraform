@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 resource "helm_release" "external_secrets" {
   name       = var.release_name
-  repository = "https://charts.external-secrets.io"
+  repository = "oci://ghcr.io/external-secrets/charts"
   chart      = "external-secrets"
   namespace  = var.namespace
 

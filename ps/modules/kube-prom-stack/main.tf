@@ -1,6 +1,6 @@
 resource "helm_release" "kube_prometheus_stack" {
   name       = "kube-prometheus-stack"
-  repository = "https://prometheus-community.github.io/helm-charts"
+  repository = "oci://ghcr.io/prometheus-community/charts"
   chart      = "kube-prometheus-stack"
   namespace  = var.namespace
   wait       = false
@@ -83,7 +83,7 @@ resource "helm_release" "kube_prometheus_stack" {
 
 resource "helm_release" "tempo" {
   name       = "tempo"
-  repository = "https://grafana.github.io/helm-charts"
+  repository = "oci://ghcr.io/grafana/helm-charts"
   chart      = "tempo"
   namespace  = var.namespace
   wait       = false

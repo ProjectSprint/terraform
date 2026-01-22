@@ -2,8 +2,7 @@ terraform {
   backend "kubernetes" {
     secret_suffix = "state"
     namespace     = "tf-state"
-    # in_cluster_config = true
-    config_path = "~/.kube/ps.kubeconfig"
+    config_path   = "~/.kube/ps.kubeconfig"
   }
   required_providers {
     kubernetes = {
@@ -18,39 +17,46 @@ terraform {
 }
 
 provider "kubernetes" {
+  config_path = "~/.kube/ps.kubeconfig"
 }
 
 provider "helm" {
   kubernetes = {
+    config_path = "~/.kube/ps.kubeconfig"
   }
 }
 
 module "namespaces" {
-  source = "../../modules/namespaces"
+  source     = "../../modules/namespaces"
+  namespaces = local.namespaces
 }
 
 module "cert_manager" {
   source = "../../modules/cert-manager"
+}
+
+module "cert_manager_issuer" {
+  source = "../../modules/cert-manager-issuer/"
   email  = "admin@projectsprint.id"
 }
 
 module "grafana_tls" {
   source      = "../../modules/tls-certificate"
-  namespace   = module.namespaces.monitoring_name
-  domain      = local.grafana_domain
-  secret_name = "${local.grafana_domain}-tls"
-  issuer_name = module.cert_manager.issuer_name
+  namespace   = local.namespaces.monitoring
+  domain      = local.domains.grafana
+  secret_name = "${local.domains.grafana}-tls"
+  issuer_name = module.cert_manager_issuer.name
 }
 
 # kubectl get secret kube-prometheus-stack-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode
-module "monitoring" {
-  source         = "../../modules/monitoring"
-  namespace      = module.namespaces.monitoring_name
-  grafana_domain = local.grafana_domain
+module "kube-prom-stack" {
+  source         = "../../modules/kube-prom-stack"
+  namespace      = local.namespaces.monitoring
+  grafana_domain = local.domains.grafana
 }
 
-module "traefik" {
-  source         = "../../modules/traefik"
+module "traefik_config" {
+  source         = "../../modules/traefik-config"
   values_content = <<-EOT
     additionalArguments:
       - "--metrics.prometheus.addEntryPointsLabels=true"
@@ -58,7 +64,7 @@ module "traefik" {
       - "--metrics.prometheus.addServicesLabels=true"
       - "--tracing=true"
       - "--tracing.otlp.grpc=true"
-      - "--tracing.otlp.grpc.endpoint=${module.monitoring.tempo_input_url}"
+      - "--tracing.otlp.grpc.endpoint=${module.kube-prom-stack.tempo_input_url}"
       - "--tracing.otlp.grpc.insecure=true"
       - "--tracing.serviceName=traefik"
       - "--tracing.sampleRate=1.0"
@@ -70,24 +76,24 @@ module "traefik" {
 
 module "grafana_ingress" {
   source                  = "../../modules/ingress"
-  domain                  = local.grafana_domain
-  service_namespace       = module.namespaces.monitoring_name
+  domain                  = local.domains.grafana
+  service_namespace       = local.namespaces.monitoring
   service_tls_secret_name = module.grafana_tls.secret_name
-  service_name            = module.monitoring.grafana_svc_name
+  service_name            = module.kube-prom-stack.grafana_svc_name
   service_port            = 80
 }
 
 module "capsule" {
   source      = "../../modules/capsule"
-  namespace   = module.namespaces.capsule_system_name
-  user_groups = [local.tenant_user_group]
-  domain_sans = ["cluster1.projectsprint.id"]
+  namespace   = local.namespaces.capsule_system
+  user_groups = [local.tenant.user_group]
+  domain_sans = [local.domains.capsule]
 }
 
 module "capsule_tenants" {
   source            = "../../modules/capsule-tenant"
-  tenant_user_group = local.tenant_user_group
-  namespace         = module.namespaces.tenant_system_name
+  tenant_user_group = local.tenant.user_group
+  namespace         = local.namespaces.tenant_system
 
   teams = [
     {
@@ -109,65 +115,12 @@ module "capsule_tenants" {
   ]
 }
 
-
-module "eso" {
-  source = "../../modules/vault"
-
-  namespace               = module.namespaces.secret_system_name
-  vault_kv_path           = "secret/"
-  vault_token             = "asdf"
-  vault_token_secret_name = "vault-token"
-  vault_token_secret_key  = "token"
-}
-/**
- apiVersion: external-secrets.io/v1beta1
-kind: ExternalSecret
-metadata:
-  name: app-db-secret
-  namespace: app
-spec:
-  refreshInterval: 1h
-  secretStoreRef:
-    name: vault-backend          # 👈 link to SecretStore
-    kind: SecretStore
-  target:
-    name: db-secret              # 👈 name of the K8s Secret to create
-  data:
-    - secretKey: username        # 👈 key inside K8s Secret
-      remoteRef:
-        key: secret/data/app/db  # 👈 path in Vault
-        property: username       # 👈 property inside Vault secret
-    - secretKey: password
-      remoteRef:
-        key: secret/data/app/db
-        property: password
- */
-
-/**
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: myservice
-spec:
-  replicas: 1
-  template:
-    spec:
-      containers:
-        - name: app
-          image: myrepo/myservice:latest
-          envFrom:
-            - secretRef:
-                name: db-secret   # <- This comes from ESO
- */
-
-/**
-envFromSecrets:
-  - name: db-secret
-{{- if .Values.envFromSecrets }}
-envFrom:
-  {{- range .Values.envFromSecrets }}
-  - secretRef:
-      name: {{ .name }}
-  {{- end }}
-{{- end }}
- */
+# module "eso" {
+#   source = "../../modules/vault"
+#
+#   namespace               = module.namespaces.secret_system_name
+#   vault_kv_path           = "secret/"
+#   vault_token             = "asdf"
+#   vault_token_secret_name = "vault-token"
+#   vault_token_secret_key  = "token"
+# }

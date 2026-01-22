@@ -16,22 +16,3 @@ resource "kubernetes_manifest" "certificate" {
     }
   }
 }
-
-# resource "kubernetes_manifest" "argocd_certificate" {
-#   manifest = {
-#     apiVersion = "cert-manager.io/v1"
-#     kind       = "Certificate"
-#     metadata = {
-#       name      = "argocd-server-tls"
-#       namespace = "argocd"
-#     }
-#     spec = {
-#       secretName = "argocd-server-tls"
-#       dnsNames   = ["argocd-cluster1.projectsprint.id"]
-#       issuerRef = {
-#         name = var.issuer_name
-#         kind = "ClusterIssuer"
-#       }
-#     }
-#   }
-# }
